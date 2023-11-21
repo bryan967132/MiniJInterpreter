@@ -1,4 +1,4 @@
-# MiniJ
+# MiniJCompiler
 ## VSCode Theme
 ![Window](Images/ScreenVSCodeTheme.png)
 
