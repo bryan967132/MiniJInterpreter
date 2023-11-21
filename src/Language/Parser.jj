@@ -1,0 +1,623 @@
+options {
+    STATIC = false;
+}
+
+PARSER_BEGIN(Parser)
+
+/* 1. Package e importaciones */
+package Language;
+import java.util.ArrayList;
+import java.util.Arrays;
+import Classes.Abstracts.*;
+import Classes.Expressions.*;
+import Classes.Instructions.*;
+import Classes.Utils.IDValue;
+import Classes.Utils.InitializeFor;
+import Classes.Utils.Parameter;
+import Classes.Utils.Type;
+import Classes.Utils.TypeError;
+import Classes.Utils.Outs;
+public class Parser {
+/* 2. Configuraciones para el analisis (Operaciones y Declaraciones) */
+    public ArrayList<Instruction> execute;
+}
+
+PARSER_END(Parser)
+
+/* 3. Reglas Semanticas */
+// Reservadas
+TOKEN : {
+    <RW_main     : "main">     |
+    <RW_void     : "void">     |
+    <RW_String   : "String">   |
+    <RW_boolean  : "boolean">  |
+    <RW_char     : "char">     |
+    <RW_int      : "int">      |
+    <RW_double   : "double">   |
+    <RW_if       : "if">       |
+    <RW_else     : "else">     |
+    <RW_for      : "for">      |
+    <RW_while    : "while">    |
+    <RW_do       : "do">       |
+    <RW_switch   : "switch">   |
+    <RW_case     : "case">     |
+    <RW_default  : "default">  |
+    <RW_break    : "break">    |
+    <RW_continue : "continue"> |
+    <RW_return   : "return">   |
+    <RW_true     : "true">     |
+    <RW_false    : "false">    |
+    <RW_print    : "print">    
+}
+
+// Valores
+TOKEN : {
+    <TK_char   : "'"((~["\n","\'","\\"])|(["\\"])(~[]))"'">      |
+    <TK_string : "\""(((~["\n","\"","\\"])|(["\\"])(~[]))*)"\""> |
+    <TK_int    : (["0"-"9"])+>                                   |
+    <TK_double : (["0"-"9"])+"."(["0"-"9"])+>                    
+}
+
+// Variables
+TOKEN : {
+    <TK_id : (["_"])*(["a"-"z","A"-"Z"])(["a"-"z","A"-"Z","_"]|["0"-"9"])*>
+}
+
+// Incremento / Decremento
+TOKEN : {
+    <TK_inc : "++"> |
+    <TK_dec : "--"> 
+}
+
+// Concatenacion
+TOKEN : {
+    <TK_add : "+="> |
+    <TK_sub : "-="> 
+}
+
+// Operadores Aritméticos
+TOKEN : {
+    <TK_plus  : "+"> |
+    <TK_minus : "-"> |
+    <TK_mult  : "*"> |
+    <TK_div   : "/"> |
+    <TK_mod   : "%"> 
+}
+
+// Operadores Relacionales
+TOKEN : {
+    <TK_equequ  : "=="> |
+    <TK_notequ  : "!="> |
+    <TK_lessequ : "<="> |
+    <TK_moreequ : ">="> |
+    <TK_equ     : "=">  |
+    <TK_less    : "<">  |
+    <TK_more    : ">">  
+}
+
+// Operadores Lógicos
+TOKEN : {
+    <TK_and : "&&"> |
+    <TK_or  : "||"> |
+    <TK_not : "!">  
+}
+
+// Símbolos de Agrupación
+TOKEN : {
+    <TK_lpar : "("> |
+    <TK_rpar : ")"> |
+    <TK_lbrc : "{"> |
+    <TK_rbrc : "}"> 
+}
+
+// Signos
+TOKEN : {
+    <TK_comma     : ","> |
+    <TK_colon     : ":"> |
+    <TK_semicolon : ";"> |
+    <TK_question  : "?"> 
+}
+
+SKIP : {
+    "\n"
+}
+
+SKIP : {
+	" "  |
+    "\r" |
+    "\t" 
+}
+
+SKIP : {
+    <"//"(~["\n","\r"])*>                                |
+    <"/""*"(~["*"])*"*"("*"|~["*","/"](~["*"])*"*")*"/"> |
+    <(~[])> {Outs.errors.add(Outs.newError(input_stream.line, input_stream.column, TypeError.LEXICAL, "Caracter no reconocido. \"" + image + "\""));}
+}
+
+void parse() : {} {
+    INIT()
+}
+
+// INIT := INSTRUCTIONS EOF
+void INIT() : {} {
+	execute = INSTSGLOBAL() <EOF>
+}
+// INSTSGLOBAL ::= INSTGLOBAL*
+ArrayList<Instruction> INSTSGLOBAL() : {
+    Instruction i;
+    ArrayList<Instruction> l = new ArrayList<>();
+} {
+    (
+        try {
+            i = INSTGLOBAL() {l.add(i);}
+        } catch(ParseException e) {
+            Token t = getNextToken();
+            Outs.errors.add(Outs.newError(t.beginLine, t.beginColumn, TypeError.SYNTAX, "No se esperaba \"" + t.image + "\""));
+            while(t.kind != TK_semicolon && t.kind != TK_rbrc && t != null && t.kind != EOF) {
+                t = getNextToken();
+            }
+        }
+    )* {return l;}
+}
+/* INSTGLOBAL ::=
+    CALLMAINFUNC |
+    DECLID       |
+    DECLFUNC     
+*/
+Instruction INSTGLOBAL() : {
+    Instruction inst;
+} {
+    inst = CALLMAINFUNC() {return inst;} |
+    LOOKAHEAD(3) inst = DECLID()       {return inst;} |
+    LOOKAHEAD(3) inst = DECLFUNC()     {return inst;} 
+}
+// CALLMAINFUNC ::= 'main' CALLFUNC ';'
+Instruction CALLMAINFUNC() : {
+    Token m;
+    Expression callMain;
+} {
+    m = <RW_main> callMain = CALLFUNC() <TK_semicolon> {return new MainMethod(m.beginLine, m.beginColumn, callMain);}
+}
+// CALLFUNC ::= TK_id '(' LISTARGS ')'
+Expression CALLFUNC() : {
+    Token id;
+    ArrayList<Expression> l;
+} {
+    id = <TK_id> <TK_lpar> l = LISTARGS() <TK_rpar> {return new CallFunction(id.beginLine, id.beginColumn, id.image, l);}
+}
+// LISTARGS ::= (EXP (',' EXP)*)?
+ArrayList<Expression> LISTARGS() : {
+    Expression e1;
+    ArrayList<Expression> l = new ArrayList<>();
+} {
+    (
+        e1 = EXP() {l.add(e1);}
+        (
+            <TK_comma> e1 = EXP() {l.add(e1);}
+        )*
+    )? {return l;}
+}
+// DECLID ::= TYPE INITIDS ';'
+Instruction DECLID() : {
+    Type t;
+    ArrayList<IDValue> arr;
+} {
+    t = TYPE() arr = INITIDS() <TK_semicolon> {return new InitID(token.beginLine, token.beginColumn, arr, t);}
+}
+// INITIDS ::= TK_id ('=' EXP)? (',' TK_id ('=' EXP)?)*
+ArrayList<IDValue> INITIDS() : {
+    Token id;
+    Expression exp = null;
+    ArrayList<IDValue> l = new ArrayList<>();
+} {
+    id = <TK_id> (<TK_equ> exp = EXP())? {l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));}
+    (
+        <TK_comma> id = <TK_id> (<TK_equ> exp = EXP())? {l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));}
+    )* {return l;}
+}
+/* DECLFUNC ::=
+    TYPE   TK_id '(' LISTPARAMS ')' ENV |
+    'void' TK_id '(' LISTPARAMS ')' ENV
+*/
+Instruction DECLFUNC() : {
+    Token n;
+    Type t;
+    Token id;
+    ArrayList<Parameter> l;
+    Block b;
+} {
+    t = TYPE() id = <TK_id> <TK_lpar> l = LISTPARAMS() <TK_rpar> b = ENV()    {return new Function(id.beginLine, id.beginColumn, id.image, l, b, t);        } |
+    n = <RW_void> id = <TK_id> <TK_lpar> l = LISTPARAMS() <TK_rpar> b = ENV() {return new Function(n.beginLine, n.beginColumn, id.image, l, b, Type.NULL);} 
+}
+// LISTARGS ::= (TYPE TK_id (',' TYPE TK_id)*)?
+ArrayList<Parameter> LISTPARAMS() : {
+    Type t;
+    Token id;
+    ArrayList<Parameter> l = new ArrayList<>();
+} {
+    (
+        t = TYPE() id = <TK_id> {l.add(new Parameter(id.beginLine, id.beginColumn, id.image, t));}
+        (
+            <TK_comma> t = TYPE() id = <TK_id> {l.add(new Parameter(id.beginLine, id.beginColumn, id.image, t));}
+        )*
+    )? {return l;}
+}
+// IFSTRUCT ::= 'if' '(' EXP ')' ENV ('else' (IFSTRUCT | ENV))?
+Sentence IFSTRUCT() : {
+    Token r;
+    Expression cn;
+    Block b1;
+    Sentence b2 = null;
+} {
+    r = <RW_if> <TK_lpar> cn = EXP() <TK_rpar> b1 = ENV()
+    (
+        <RW_else> (
+            b2 = IFSTRUCT() | b2 = ENV()
+        )
+    )? {return new If(r.beginLine, r.beginColumn, cn, b1, b2);}
+}
+// SWITCHSTRUCT ::= 'switch' '(' EXP ')' ENVS
+Sentence SWITCHSTRUCT() : {
+    Token s;
+    Expression exp;
+    Object[] b;
+} {
+    s = <RW_switch> <TK_lpar> exp = EXP() <TK_rpar> b = ENVS() {return new Switch(s.beginLine, s.beginColumn, exp, (ArrayList<Case>) b[0], (Block) b[1]);}
+}
+// ENVS ::= '{' CASESDEFAULT '}'
+Object[] ENVS() : {
+    Object[] casesdefault;
+} {
+    <TK_lbrc> casesdefault = CASESDEFAULT() <TK_rbrc> {return casesdefault;}
+}
+// CASESDEFAULT ::= (CASES)? (DEFAULT)?
+Object[] CASESDEFAULT() : {
+    ArrayList<Sentence> cases = null;
+    Sentence default_ = null;
+} {
+    (cases = CASES())? (default_ = DEFAULT())? {return new Object[] {cases, default_};}
+}
+// CASES ::= (CASE)+
+ArrayList<Sentence> CASES() : {
+    Sentence c;
+    ArrayList<Sentence> cases = new ArrayList<>();
+} {
+    (c = CASE() {cases.add(c);})+ {return cases;}
+}
+// CASE ::= 'case' EXP ':' (ENV | INSTRUCTIONS)
+Sentence CASE() : {
+    Token c;
+    Block b;
+    ArrayList<Sentence> i;
+    Expression exp;
+    Sentence case_;
+} {
+    c = <RW_case> exp = EXP() <TK_colon>
+    (
+        b = ENV()          {case_ = new Case(c.beginLine, c.beginColumn, exp, b);} |
+        i = INSTRUCTIONS() {case_ = new Case(c.beginLine, c.beginColumn, exp, new Block(c.beginLine, c.beginColumn, i));} 
+    ) {return case_;}
+}
+// DEFAULT ::= 'default' ':' (ENV | INSTRUCTIONS)
+Block DEFAULT() : {
+    Token d;
+    Block b;
+    ArrayList<Sentence> i;
+    Block default_;
+} {
+    d = <RW_default> <TK_colon>
+    (
+        b = ENV()          {default_ = b;                                       } |
+        i = INSTRUCTIONS() {default_ = new Block(d.beginLine, d.beginColumn, i);} 
+    ) {return default_;}
+}
+// LOOPFOR ::= 'for' '(' ARGSFOR ')' ENV
+Sentence LOOPFOR() : {
+    Token f;
+    Object[] args;
+    Block b;
+} {
+    f = <RW_for> <TK_lpar> args = ARGSFOR() <TK_rpar> b = ENV() {return new For(f.beginLine, f.beginColumn, (InitializeFor) args[0], (Expression) args[1], (ArrayList<Sentence>) args[2], b);}
+}
+// ARGSFOR ::= (UPDATESFOR)? ';' (EXP)? ';' (UPDATESFOR)?
+Object[] ARGSFOR() : {
+    InitializeFor i = null;
+    Expression e = null;
+    ArrayList<Sentence> u = null;
+} {
+    (i = INITIALIZEFOR())? <TK_semicolon> (e = EXP())? <TK_semicolon> (u = UPDATESFOR())? {return new Object[] {i, e, u};}
+}
+/* INITIALIZEFOR ::=
+    TYPE INITIDSFOR |
+    REASIGNS        
+*/
+InitializeFor INITIALIZEFOR() : {
+    Type t;
+    ArrayList<IDValue> i;
+    ArrayList<Instruction> r;
+} {
+    t = TYPE() i = INITIDSFOR() {return new InitializeFor(new InitID(i.get(0).line, i.get(0).column, i, t));} |
+    r = REASIGNS()              {return new InitializeFor(r);} 
+}
+// INITIDSFOR ::= TK_id '=' EXP (',' TK_id '=' EXP)*
+ArrayList<IDValue> INITIDSFOR() : {
+    Token id;
+    Expression exp;
+    ArrayList<IDValue> l = new ArrayList<>();
+} {
+    id = <TK_id> <TK_equ> exp = EXP() {l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));}
+    (
+        <TK_comma> id = <TK_id> <TK_equ> exp = EXP() {l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));}
+    )* {return l;}
+}
+// REASIGNS ::= REASIGN (',' REASIGN)*
+ArrayList<Instruction> REASIGNS() : {
+    Instruction r;
+    ArrayList<Instruction> l = new ArrayList<>();
+} {
+    r = REASIGN() {l.add(r);} (<TK_comma> r = REASIGN() {l.add(r);})* {return l;}
+}
+// UPDATESFOR ::= UPDATEFOR (',' UPDATEFOR)*
+ArrayList<Sentence> UPDATESFOR() : {
+    Sentence up;
+    ArrayList<Sentence> l = new ArrayList<>();
+} {
+    up = UPDATEFOR() {l.add(up);} (<TK_comma> up = UPDATEFOR() {l.add(up);})* {return l;}
+}
+/* UPDATEFOR ::=
+    INCDEC  |
+    REASIGN |
+    ADDSUB  
+*/
+Sentence UPDATEFOR() : {
+    Sentence update;
+} {
+    LOOKAHEAD(2) update = INCDEC()  {return update;} |
+    LOOKAHEAD(2) update = REASIGN() {return update;} |
+    LOOKAHEAD(2) update = ADDSUB()  {return update;} 
+}
+// LOOPWHILE ::= 'while' '(' EXP ')' ENV
+Sentence LOOPWHILE() : {
+    Token w;
+    Expression exp;
+    Block b;
+} {
+    w = <RW_while> <TK_lpar> exp = EXP() <TK_rpar> b = ENV() {return new While(w.beginLine, w.beginColumn, exp, b);}
+}
+// LOOPDOWHILE ::= 'do' ENV 'while' '(' EXP ')' ';'
+Sentence LOOPDOWHILE() : {
+    Token d;
+    Block b;
+    Expression exp;
+} {
+    d = <RW_do> b = ENV() <RW_while> <TK_lpar> exp = EXP() <TK_rpar> <TK_semicolon> {return new DoWhile(d.beginLine, d.beginColumn, exp, b);}
+}
+// REASIGN ::= TK_id '=' EXP
+Instruction REASIGN() : {
+    Token id;
+    Expression exp;
+} {
+    id = <TK_id> <TK_equ> exp = EXP() {return new AsignID(id.beginLine, id.beginColumn, id.image, exp);}
+}
+// INCDEC ::= TK_id ('++' | '--')
+Expression INCDEC() : {
+    Token id, s;
+} {
+    id = <TK_id> (
+        s = <TK_inc> |
+        s = <TK_dec>
+    ) {return new IncDec(id.beginLine, id.beginColumn, id.image, s.image);}
+}
+// ADDSUB ::= TK_id ('+=' | '-=') EXP
+Instruction ADDSUB() : {
+    Token s;
+    Token id;
+    Expression exp;
+} {
+    id = <TK_id> (s = <TK_add> | s = <TK_sub>) exp = EXP() {return new AddSub(id.beginLine, id.beginColumn, id.image, s.image, exp);}
+}
+// PRINT ::= 'PRINT' '(' EXP? ')' ';'
+Instruction PRINT() : {
+    Token p;
+    Expression exp = null;
+} {
+	p = <RW_print> <TK_lpar> (exp = EXP())? <TK_rpar> <TK_semicolon> {return new Print(p.beginLine, p.beginColumn, exp);}
+}
+// ENV ::= '{' INSTRUCTIONS '}'
+Block ENV() : {
+    Token l;
+    ArrayList<Sentence> ins;
+} {
+    l = <TK_lbrc> ins = INSTRUCTIONS() <TK_rbrc> {return new Block(l.beginLine, l.beginColumn, ins);}
+}
+// INSTRUCTIONS ::= INSTRUCTION*
+ArrayList<Sentence> INSTRUCTIONS() : {
+    Sentence i;
+    ArrayList<Sentence> l = new ArrayList<>();
+} {
+	(
+        try {
+            i = INSTRUCTION() {l.add(i);}
+        } catch(ParseException e) {
+            Token t = getNextToken();
+            Outs.errors.add(Outs.newError(t.beginLine, t.beginColumn, TypeError.SYNTAX, "No se esperaba \"" + t.image + "\""));
+            while(t.kind != TK_semicolon && t.kind != TK_rbrc && t != null && t.kind != EOF) {
+                t = getNextToken();
+            }
+        }
+    )* {return l;}
+}
+/* INSTRUCTION ::=
+    DECLID              |
+    IFSTRUCT            |
+    SWITCHSTRUCT        |
+    LOOPFOR             |
+    LOOPWHILE           |
+    LOOPDOWHILE         |
+    REASIGN         ';' |
+    ADDSUB          ';' |
+    INCDEC          ';' |
+    CALLFUNC        ';' |
+    PRINT               |
+    'return' (EXP)? ';' |
+    'continue'      ';' |
+    'break'         ';'
+*/
+Sentence INSTRUCTION() : {
+    Sentence ins;
+    Token trn;
+    Expression exp = null;
+} {
+    ins = DECLID()                                  {return ins;} |
+    ins = IFSTRUCT()                                {return ins;} |
+    ins = SWITCHSTRUCT()                            {return ins;} |
+    ins = LOOPFOR()                                 {return ins;} |
+    ins = LOOPWHILE()                               {return ins;} |
+    ins = LOOPDOWHILE()                             {return ins;} |
+    LOOKAHEAD(2) ins = REASIGN()     <TK_semicolon> {return ins;} |
+    LOOKAHEAD(2) ins = ADDSUB()      <TK_semicolon> {return ins;} |
+    LOOKAHEAD(2) ins = INCDEC()      <TK_semicolon> {return ins;} |
+    ins = CALLFUNC()                 <TK_semicolon> {return ins;} |
+	ins = PRINT()                                   {return ins;} |
+    trn = <RW_return> (exp = EXP())? <TK_semicolon> {return new Return(trn.beginLine, trn.beginColumn, exp);} |
+    trn = <RW_continue>              <TK_semicolon> {return new Continue(trn.beginLine, trn.beginColumn);   } |
+    trn = <RW_break>                 <TK_semicolon> {return new Break(trn.beginLine, trn.beginColumn);      } 
+}
+/* TYPE ::=
+    RW_String  |
+    RW_int     |
+    RW_boolean |
+    RW_char    |
+    RW_double  
+*/
+Type TYPE() : {} {
+    <RW_String>  {return Type.STRING; } |
+    <RW_int>     {return Type.INT;    } |
+    <RW_boolean> {return Type.BOOLEAN;} |
+    <RW_char>    {return Type.CHAR;   } |
+    <RW_double>  {return Type.DOUBLE; } 
+}
+// EXP ::= opOr ('?' opOr ':' opOr)?
+Expression EXP() : {
+    Expression c, y, n;
+} {
+    c = opOr()
+    (
+        <TK_question> y = opOr() <TK_colon> n = opOr() {c = new Ternary(c.line, c.column, c, y, n);}
+    )? {return c;}
+}
+// opOr ::= opAnd ('||' opAnd)*
+Expression opOr() : {
+    Token s;
+    Expression e1, e2;
+} {
+    e1 = opAnd() (
+        s = <TK_or> e2 = opAnd() {e1 = new Logic(s.beginLine, s.beginColumn, e1, s.image, e2);}
+    )* {return e1;}
+}
+// opAnd ::= opEqu ('&&' opEqu)*
+Expression opAnd() : {
+    Token s;
+    Expression e1, e2;
+} {
+    e1 = opEqu() (
+        s = <TK_and> e2 = opEqu() {e1 = new Logic(s.beginLine, s.beginColumn, e1, s.image, e2);}
+    )* {return e1;}
+}
+/*opEqu ::=
+    opCmp ('==' opCmp)* |
+    opCmp ('!=' opCmp)* 
+*/
+Expression opEqu() : {
+    Token s;
+    Expression e1, e2;
+} {
+    e1 = opCmp() (
+        s = <TK_equequ> e2 = opCmp() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} |
+        s = <TK_notequ> e2 = opCmp() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} 
+    )* {return e1;}
+}
+/* opCmp ::=
+    opAdd ('<=' opAdd)* |
+    opAdd ('>=' opAdd)* |
+    opAdd ('<' opAdd)*  |
+    opAdd ('>' opAdd)*  
+*/
+Expression opCmp() : {
+    Token s;
+    Expression e1, e2;
+} {
+    e1 = opAdd() (
+        s = <TK_lessequ> e2 = opAdd() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} |
+        s = <TK_moreequ> e2 = opAdd() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} |
+        s = <TK_less>    e2 = opAdd() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} |
+        s = <TK_more>    e2 = opAdd() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} 
+    )* {return e1;}
+}
+/* opAdd ::=
+    opMult ('+' opMult)* |
+    opMult ('-' opMult)* 
+*/
+Expression opAdd() : {
+    Token s;
+    Expression e1, e2;
+} {
+    e1 = opMult() (
+        s = <TK_plus>  e2 = opMult() {e1 = new Arithmetic(e1.line, e1.column, e1, s.image, e2);} |
+        s = <TK_minus> e2 = opMult() {e1 = new Arithmetic(e1.line, e1.column, e1, s.image, e2);} 
+    )* {return e1;}
+}
+/* opMult ::=
+    unary ('*' unary)* |
+    unary ('/' unary)* 
+*/
+Expression opMult() : {
+    Token s;
+    Expression e1, e2;
+} {
+    e1 = unary() (
+        s = <TK_mult> e2 = unary() {e1 = new Arithmetic(e1.line, e1.column, e1, s.image, e2);} |
+        s = <TK_div>  e2 = unary() {e1 = new Arithmetic(e1.line, e1.column, e1, s.image, e2);} |
+        s = <TK_mod>  e2 = unary() {e1 = new Arithmetic(e1.line, e1.column, e1, s.image, e2);} 
+    )* {return e1;}
+}
+/* unary ::=
+    '-' unary |
+    '!' unary |
+    primitive 
+*/
+Expression unary() : {
+    Token s;
+    Expression exp;
+} {
+    s = <TK_minus> exp = unary() {return new Arithmetic(s.beginLine, s.beginColumn, null, s.image, exp);} |
+    s = <TK_not>   exp = unary() {return new Logic(s.beginLine, s.beginColumn, null, s.image, exp);     } |
+    exp = primitive()            {return exp;} 
+}
+/* primitive ::=
+    INCDEC      |
+    CALLFUNC    |
+    TK_id       |
+    TK_string   |
+    TK_char     |
+    TK_int      |
+    TK_double   |
+    RW_true     |
+    RW_false    |
+    '(' EXP ')' 
+*/
+Expression primitive() : {
+    Token p;
+    Expression exp;
+} {
+    LOOKAHEAD(2) exp = INCDEC()     {return exp;} |
+    LOOKAHEAD(2) exp = CALLFUNC()   {return exp;} |
+    p = <TK_id>                     {return new AccessID(p.beginLine, p.beginColumn, p.image);} |
+    p = <TK_string>                 {return new Primitive(p.beginLine, p.beginColumn, p.image.substring(1, p.image.length() - 1), Type.STRING);} |
+    p = <TK_char>                   {return new Primitive(p.beginLine, p.beginColumn, p.image.substring(1, p.image.length() - 1), Type.CHAR);  } |
+    p = <TK_int>                    {return new Primitive(p.beginLine, p.beginColumn, p.image, Type.INT);    } |
+    p = <TK_double>                 {return new Primitive(p.beginLine, p.beginColumn, p.image, Type.DOUBLE); } |
+    p = <RW_true>                   {return new Primitive(p.beginLine, p.beginColumn, p.image, Type.BOOLEAN);} |
+    p = <RW_false>                  {return new Primitive(p.beginLine, p.beginColumn, p.image, Type.BOOLEAN);} |
+    <TK_lpar> exp = EXP() <TK_rpar> {return exp;} 
+}
