@@ -1,6 +1,6 @@
 # MiniJCompiler
 ## Intérprete de Código: JavaCC
-Versión minimizada de c++.
+Versión minimizada de c++.  
 Implementa patrón de diseño interpreter.
 
 ## VSCode Theme
@@ -152,9 +152,11 @@ primitive ::=
 ```
 
 ## Instalación JavaCC
-* Descargar javacc: [JavaCC](https://javacc.github.io/javacc/)  
+* Descargar javacc: [JavaCC](https://javacc.github.io/javacc/)
 * Buscar la carpeta ```./javacc/scripts``` y copiar la dirección.
 * Pegar la dirección en las variables de entorno.
     * Buscar ```Path``` en variables del sistema.
     * Pegar la ruta copiada. ```./javacc/scripts```
+
+## Generación de Parser
 * Ejecutar el comando ```javacc Parser.jj``` en la ubicación del archivo con extensión .jj para generar el código del parser.
