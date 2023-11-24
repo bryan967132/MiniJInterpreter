@@ -21,10 +21,10 @@ public class Env {
             this.ids.put(id, new Symbol(value, id, type, null));
             return true;
         }
-        // ERROR SEMANTICO
+        setError("Redeclaración de variable existente", line, column);
         return false;
     }
-    public Symbol getValueID(String id) {
+    public Symbol getValueID(String id, int line, int column) {
         Env current = this;
         while(current != null) {
             if(current.ids.containsKey(id)) {
@@ -32,19 +32,23 @@ public class Env {
             }
             current = current.previous;
         }
-        // ERROR SEMANTICO
+        setError("Acceso a variable inexistente. '" + id +"'", line, column);
         return null;
     }
-    public boolean reasignID(String id, ReturnType value) {
+    public boolean reasignID(String id, ReturnType value, int line, int column) {
         Env current = this;
         while(current != null) {
             if(current.ids.containsKey(id)) {
-                current.ids.get(id).value = value.value;
-                return true;
+                if(current.ids.get(id).type == value.type || current.ids.get(id).type == Type.DOUBLE && value.type == Type.INT) {
+                    current.ids.get(id).value = value.value;
+                    return true;
+                }
+                setError("Los tipos no coinciden en la asignación. Intenta asignar un \"" + value.type.getValue() + "\" a un \"" + current.ids.get(id).type.getValue() + "\"", line, column);
+                return false;
             }
             current = current.previous;
         }
-        // ERROR SEMANTICO
+        setError("Resignación de valor a variable inexistente", line, column);
         return false;
     }
     public boolean saveFunction(Function func) {
@@ -52,10 +56,10 @@ public class Env {
             this.functions.put(func.id, func);
             return true;
         }
-        // ERROR SEMANTICO
+        setError("Redefinición de función existente", func.line, func.column);
         return false;
     }
-    public Function getFunction(String id) {
+    public Function getFunction(String id, int line, int column) {
         Env current = this;
         while(current != null) {
             if(current.functions.containsKey(id)) {
@@ -63,7 +67,7 @@ public class Env {
             }
             current = current.previous;
         }
-        // ERROR SEMANTICO
+        setError("Acceso a función inexistente", line, column);
         return null;
     }
     public Env getGlobal() {
@@ -78,7 +82,7 @@ public class Env {
     }
     public void setError(String errorD, int line, int column) {
         if(!match(errorD, line, column)) {
-
+            Outs.errors.add(new Error(line, column, TypeError.SEMANTIC, errorD));
         }
     }
     public boolean match(String err, int line, int column) {
