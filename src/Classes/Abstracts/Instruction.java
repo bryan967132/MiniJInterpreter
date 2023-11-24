@@ -1,5 +1,6 @@
 package Classes.Abstracts;
 import Classes.Env.Env;
+import Classes.Utils.ReturnType;
 import Classes.Utils.TypeInst;
 import Classes.Utils.TypeSent;
 public abstract class Instruction extends Sentence {
@@ -8,5 +9,5 @@ public abstract class Instruction extends Sentence {
         super(line, column, TypeSent.INSTRUCTION);
         this.typeInst = typeInst;
     }
-    public abstract void exec(Env env);
+    public abstract ReturnType exec(Env env);
 }
