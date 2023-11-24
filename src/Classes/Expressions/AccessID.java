@@ -12,10 +12,10 @@ public class AccessID extends Expression {
         this.id = id;
     }
     public ReturnType exec(Env env) {
-        Symbol value = env.getValueID(id);
+        Symbol value = env.getValueID(id, this.line, this.column);
         if(value != null) {
             return new ReturnType(value.value, value.type);
         }
-        return new ReturnType("NULL", Type.NULL);
+        return new ReturnType("null", Type.NULL);
     }
 }

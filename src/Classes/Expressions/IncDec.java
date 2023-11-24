@@ -14,20 +14,20 @@ public class IncDec extends Expression {
         this.sign = sign;
     }
     public ReturnType exec(Env env) {
-        Symbol value = env.getValueID(id);
+        Symbol value = env.getValueID(id, this.line, this.column);
         if(value != null) {
             int v;
             switch(this.sign) {
                 case "++":
                     v = Integer.parseInt(value.value.toString()) + 1;
-                    env.reasignID(id, new ReturnType(v, Type.INT));
+                    env.reasignID(id, new ReturnType(v, Type.INT), this.line, this.column);
                     return new ReturnType(v, Type.INT);
                 case "--":
                     v = Integer.parseInt(value.value.toString()) - 1;
-                    env.reasignID(id, new ReturnType(v, Type.INT));
+                    env.reasignID(id, new ReturnType(v, Type.INT), this.line, this.column);
                     return new ReturnType(v, Type.INT);
             }
         }        
-        return new ReturnType(-1, Type.NULL);
+        return new ReturnType("null", Type.NULL);
     }
 }

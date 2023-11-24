@@ -35,14 +35,14 @@ public class Arithmetic extends Expression {
             case "%":
                 return mod(env);
             default:
-                return new ReturnType(-1, Type.NULL);
+                return new ReturnType("null", Type.NULL);
         }
     }
     public ReturnType plus(Env env) {
         ReturnType value1 = exp1.exec(env);
         ReturnType value2 = exp2.exec(env);
-        int t1 = getType(value1.type);
-        int t2 = getType(value2.type);
+        int t1 = value1.type.ordinal();
+        int t2 = value2.type.ordinal();
         type = !(t1 == 5 || t2 == 5) ? Operations.plus[t1][t2] : Type.NULL;
         if(type != Type.NULL) {
             if(type == Type.INT) {
@@ -58,13 +58,14 @@ public class Arithmetic extends Expression {
                 return new ReturnType(result, type);
             }
         }
-        return new ReturnType(-1, type);
+        env.setError("Los tipos no son válidos para operaciones aritméticas", exp1.line, exp1.column);
+        return new ReturnType("null", type);
     }
     public ReturnType minus(Env env) {
         ReturnType value1 = exp1.exec(env);
         ReturnType value2 = exp2.exec(env);
-        int t1 = getType(value1.type);
-        int t2 = getType(value2.type);
+        int t1 = value1.type.ordinal();
+        int t2 = value2.type.ordinal();
         type = !(t1 == 5 || t2 == 5) ? Operations.minus[t1][t2] : Type.NULL;
         if(type != Type.NULL) {
             if(type == Type.INT) {
@@ -76,7 +77,8 @@ public class Arithmetic extends Expression {
                 return new ReturnType(result, type);
             }
         }
-        return new ReturnType(-1, type);
+        env.setError("Los tipos no son válidos para operaciones aritméticas", exp1.line, exp1.column);
+        return new ReturnType("null", type);
     }
     public ReturnType uminus(Env env) {
         ReturnType value2 = exp2.exec(env);
@@ -91,13 +93,14 @@ public class Arithmetic extends Expression {
                 return new ReturnType(result, type);
             }
         }
-        return new ReturnType(-1, type);
+        env.setError("Los tipos no son válidos para operaciones aritméticas", exp2.line, exp2.column);
+        return new ReturnType("null", type);
     }
     public ReturnType mult(Env env) {
         ReturnType value1 = exp1.exec(env);
         ReturnType value2 = exp2.exec(env);
-        int t1 = getType(value1.type);
-        int t2 = getType(value2.type);
+        int t1 = value1.type.ordinal();
+        int t2 = value2.type.ordinal();
         type = !(t1 == 5 || t2 == 5) ? Operations.mult[t1][t2] : Type.NULL;
         if(type != Type.NULL) {
             if(type == Type.INT) {
@@ -109,13 +112,14 @@ public class Arithmetic extends Expression {
                 return new ReturnType(result, type);
             }
         }
-        return new ReturnType(-1, type);
+        env.setError("Los tipos no son válidos para operaciones aritméticas", exp1.line, exp1.column);
+        return new ReturnType("null", type);
     }
     public ReturnType div(Env env) {
         ReturnType value1 = exp1.exec(env);
         ReturnType value2 = exp2.exec(env);
-        int t1 = getType(value1.type);
-        int t2 = getType(value2.type);
+        int t1 = value1.type.ordinal();
+        int t2 = value2.type.ordinal();
         type = !(t1 == 5 || t2 == 5) ? Operations.div[t1][t2] : Type.NULL;
         if(type != Type.NULL) {
             if(type == Type.DOUBLE) {
@@ -123,13 +127,14 @@ public class Arithmetic extends Expression {
                 return new ReturnType(result, type);
             }
         }
-        return new ReturnType(-1, type);
+        env.setError("Los tipos no son válidos para operaciones aritméticas", exp1.line, exp1.column);
+        return new ReturnType("null", type);
     }
     public ReturnType pow(Env env) {
         ReturnType value1 = exp1.exec(env);
         ReturnType value2 = exp2.exec(env);
-        int t1 = getType(value1.type);
-        int t2 = getType(value2.type);
+        int t1 = value1.type.ordinal();
+        int t2 = value2.type.ordinal();
         type = !(t1 == 5 || t2 == 5) ? Operations.pow[t1][t2] : Type.NULL;
         if(type != Type.NULL) {
             if(type == Type.INT) {
@@ -141,13 +146,14 @@ public class Arithmetic extends Expression {
                 return new ReturnType(result, type);
             }
         }
-        return new ReturnType(-1, type);
+        env.setError("Los tipos no son válidos para operaciones aritméticas", exp1.line, exp1.column);
+        return new ReturnType("null", type);
     }
     public ReturnType mod(Env env) {
         ReturnType value1 = exp1.exec(env);
         ReturnType value2 = exp2.exec(env);
-        int t1 = getType(value1.type);
-        int t2 = getType(value2.type);
+        int t1 = value1.type.ordinal();
+        int t2 = value2.type.ordinal();
         type = !(t1 == 5 || t2 == 5) ? Operations.mod[t1][t2] : Type.NULL;
         if(type != Type.NULL) {
             if(type == Type.DOUBLE) {
@@ -159,15 +165,8 @@ public class Arithmetic extends Expression {
                 return new ReturnType(result, type);
             }
         }
-        return new ReturnType(-1, type);
-    }
-    public int getType(Type type) {
-        if(type == Type.INT) return 0;
-        if(type == Type.DOUBLE) return 1;
-        if(type == Type.BOOLEAN) return 2;
-        if(type == Type.CHAR) return 3;
-        if(type == Type.STRING) return 4;
-        return 5;
+        env.setError("Los tipos no son válidos para operaciones aritméticas", exp1.line, exp1.column);
+        return new ReturnType("null", type);
     }
     public ReturnType getValue(ReturnType value) {
         if(value.type == Type.BOOLEAN) {

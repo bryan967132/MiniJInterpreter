@@ -5,6 +5,7 @@ import Classes.Env.Env;
 import Classes.Instructions.Function;
 import Classes.Utils.Parameter;
 import Classes.Utils.ReturnType;
+import Classes.Utils.Type;
 import Classes.Utils.TypeExp;
 public class CallFunction extends Expression {
     String id;
@@ -15,18 +16,18 @@ public class CallFunction extends Expression {
         this.args = args;
     }
     public ReturnType exec(Env env) {
-        Function func = env.getFunction(id);
+        Function func = env.getFunction(id, this.line, this.column);
         if(func != null) {
             Env envFunc = new Env(env.getGlobal(), "Funcion " + id);
             if(func.params.size() == args.size()) {
                 for(int i = 0; i < func.params.size(); i++) {
                     ReturnType value = args.get(i).exec(env);
                     Parameter param = func.params.get(i);
-                    if(value.type == param.type) {
+                    if(value.type == param.type || param.type == Type.DOUBLE && value.type == Type.INT) {
                         envFunc.saveID(param.id, value.value, param.type, this.line, this.column);
                         continue;
                     }
-                    // ERROR SEMANTICO: NO COINCIDEN LOS TIPOS DE LOS PARAMETROS
+                    envFunc.setError("El tipo de dato del parámetro no es el esperado", param.line, param.column);
                     return null;
                 }
                 ReturnType execute = func.block.exec(envFunc);
@@ -38,10 +39,9 @@ public class CallFunction extends Expression {
                 }
                 return null;
             }
-            // ERROR SEMANTICO: NO CONICIDE LA CANTIDAD DE PARAMETROS ENVIADOS CON LOS RECIBIDOS
+            envFunc.setError("Cantidad errónea de parámetros enviados", this.line, this.column);
             return null;
         }
-        // ERROR SEMANTICO: LA FUNCION QUE SE INTENTA LLAMAR NO ESTÁ DECLARADO
         return null;
     }
 }
