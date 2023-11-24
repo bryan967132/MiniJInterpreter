@@ -1,15 +1,16 @@
 package Classes.Instructions;
 import Classes.Abstracts.Expression;
+import Classes.Abstracts.Instruction;
 import Classes.Env.Env;
 import Classes.Utils.ReturnType;
 import Classes.Utils.Type;
-import Classes.Utils.TypeExp;
-public class Case extends Expression {
+import Classes.Utils.TypeInst;
+public class Case extends Instruction {
     Expression _case;
     Block block;
     ReturnType caseEvaluate;
     public Case(int line, int column, Expression _case, Block block){
-        super(line, column, TypeExp.IF);
+        super(line, column, TypeInst.CASE);
         this._case = _case;
         this.block = block;
     }

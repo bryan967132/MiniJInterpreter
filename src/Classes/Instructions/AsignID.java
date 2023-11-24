@@ -12,8 +12,9 @@ public class AsignID extends Instruction {
         this.id = id;
         this.value = value;
     }
-    public void exec(Env env) {
+    public ReturnType exec(Env env) {
         ReturnType value = this.value.exec(env);
-        env.reasignID(id, value);
+        env.reasignID(id, value, this.line, this.column);
+        return null;
     }
 }

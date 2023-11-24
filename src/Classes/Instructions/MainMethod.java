@@ -2,6 +2,7 @@ package Classes.Instructions;
 import Classes.Abstracts.Expression;
 import Classes.Abstracts.Instruction;
 import Classes.Env.Env;
+import Classes.Utils.ReturnType;
 import Classes.Utils.TypeInst;
 public class MainMethod extends Instruction {
     Expression method;
@@ -9,7 +10,8 @@ public class MainMethod extends Instruction {
         super(line, column, TypeInst.MAIN);
         this.method = method;
     }
-    public void exec(Env env) {
+    public ReturnType exec(Env env) {
         method.exec(env);
+        return null;
     }
 }

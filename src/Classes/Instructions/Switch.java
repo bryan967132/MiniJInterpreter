@@ -1,15 +1,17 @@
 package Classes.Instructions;
 import java.util.ArrayList;
 import Classes.Abstracts.Expression;
+import Classes.Abstracts.Instruction;
 import Classes.Env.Env;
 import Classes.Utils.ReturnType;
 import Classes.Utils.TypeExp;
-public class Switch extends Expression {
+import Classes.Utils.TypeInst;
+public class Switch extends Instruction {
     Expression arg;
     ArrayList<Case> cases;
     Block _default;
     public Switch(int line, int column, Expression arg, ArrayList<Case> cases, Block _default) {
-        super(line, column, TypeExp.IF);
+        super(line, column, TypeInst.SWITCH);
         this.arg = arg;
         this.cases = cases;
         this._default = _default;
@@ -25,7 +27,7 @@ public class Switch extends Expression {
                     if(case_exec.value == TypeExp.RETURN) {
                         return null;
                     }
-                    if(case_exec.value == TypeExp.BREAK) {
+                    if(case_exec.value == TypeInst.BREAK) {
                         return null;
                     }
                     return case_exec;
@@ -38,7 +40,7 @@ public class Switch extends Expression {
                 if(default_.value == TypeExp.RETURN) {
                     return null;
                 }
-                if(default_.value == TypeExp.BREAK) {
+                if(default_.value == TypeInst.BREAK) {
                     return null;
                 }
                 return default_;

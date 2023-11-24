@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import Classes.Abstracts.Instruction;
 import Classes.Env.Env;
 import Classes.Utils.Parameter;
+import Classes.Utils.ReturnType;
 import Classes.Utils.Type;
 import Classes.Utils.TypeInst;
 public class Function extends Instruction {
@@ -17,7 +18,8 @@ public class Function extends Instruction {
         this.block = block;
         this.type = type;
     }
-    public void exec(Env env) {
+    public ReturnType exec(Env env) {
         env.saveFunction(this);
+        return null;
     }
 }

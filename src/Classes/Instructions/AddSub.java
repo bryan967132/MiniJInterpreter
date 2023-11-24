@@ -5,6 +5,7 @@ import Classes.Env.Env;
 import Classes.Env.Symbol;
 import Classes.Expressions.Arithmetic;
 import Classes.Expressions.Primitive;
+import Classes.Utils.ReturnType;
 import Classes.Utils.TypeInst;
 public class AddSub extends Instruction {
     private String id;
@@ -16,8 +17,8 @@ public class AddSub extends Instruction {
         this.sign = sign;
         this.exp = exp;
     }
-    public void exec(Env env) {
-        Symbol value = env.getValueID(id);
+    public ReturnType exec(Env env) {
+        Symbol value = env.getValueID(id, this.line, this.column);
         switch(this.sign) {
             case "+=":
                 env.reasignID(
@@ -26,7 +27,8 @@ public class AddSub extends Instruction {
                         new Primitive(line, column, value.value.toString(), value.type),
                         "+",
                         exp
-                    ).exec(env)
+                    ).exec(env),
+                    this.line, this.column
                 );
                 break;
             case "-=":
@@ -36,9 +38,11 @@ public class AddSub extends Instruction {
                         new Primitive(line, column, value.value.toString(), value.type),
                         "-",
                         exp
-                    ).exec(env)
+                    ).exec(env),
+                    this.line, this.column
                 );
                 break;
         }
+        return null;
     }
 }

@@ -1,13 +1,14 @@
 package Classes.Instructions;
 import Classes.Abstracts.Expression;
+import Classes.Abstracts.Instruction;
 import Classes.Env.Env;
 import Classes.Utils.ReturnType;
-import Classes.Utils.TypeExp;
-public class DoWhile extends Expression {
+import Classes.Utils.TypeInst;
+public class DoWhile extends Instruction {
     private Expression condition;
     private Block block;
     public DoWhile(int line, int column, Expression condition, Block block) {
-        super(line, column, TypeExp.LOOP_DOWHILE);
+        super(line, column, TypeInst.LOOP_DOWHILE);
         this.condition = condition;
         this.block = block;
     }
@@ -17,11 +18,11 @@ public class DoWhile extends Expression {
         do {
             ReturnType block = this.block.exec(envDoWhile);
             if(block != null) {
-                if(block.value == TypeExp.CONTINUE) {
+                if(block.value == TypeInst.CONTINUE) {
                     condition = this.condition.exec(envDoWhile);
                     continue;
                 }
-                if(block.value == TypeExp.BREAK) {
+                if(block.value == TypeInst.BREAK) {
                     break;
                 }
                 return block;
