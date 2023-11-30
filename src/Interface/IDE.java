@@ -8,6 +8,13 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.StyledEditorKit;
+import javax.swing.text.TabSet;
+import javax.swing.text.TabStop;
+import javax.swing.text.ViewFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -95,7 +102,27 @@ public class IDE extends JPanel implements ActionListener,KeyListener,MouseWheel
         console.setForeground(Colors.WHITE);
         console.setBackground(Colors.DARKCOLOR);
         console.setFont(new java.awt.Font("Consolas", 0, 11));
-        console.setBounds(0,0,550,575);;
+        console.setBounds(0,0,550,575);
+
+        console.setEditorKit(
+            new StyledEditorKit() {
+                public ViewFactory getViewFactory() {
+                    return new NoWrapViewFactory();
+                }
+            }
+        );
+
+        TabStop[] tabStops = new TabStop[50];
+        int tabWidth = 4 * console.getFontMetrics(console.getFont()).charWidth(' ');
+        for (int i = 0; i < tabStops.length; i++) {
+            tabStops[i] = new TabStop((i + 1) * tabWidth, TabStop.ALIGN_LEFT, TabStop.LEAD_NONE);
+        }
+        TabSet tabSet = new TabSet(tabStops);
+        StyledDocument doc = console.getStyledDocument();
+        Style paragraphStyle = doc.addStyle("paragraphStyle", null);
+        StyleConstants.setTabSet(paragraphStyle, tabSet);
+        doc.setParagraphAttributes(0, doc.getLength(), paragraphStyle, false);
+
         console.setText("MiniJ:");
         consoleScroll = new JScrollPane(console);
         consoleScroll.setBorder(BorderFactory.createLineBorder(Colors.DARKCOLOR,8));
@@ -143,7 +170,6 @@ public class IDE extends JPanel implements ActionListener,KeyListener,MouseWheel
         this.add(editorAreaContent);
         this.add(cursorPosition);
         this.add(consoleScroll);
-        // this.add(graphics);
         this.add(analyzeInput);
         this.add(uploadOuts);
         this.add(saveOLC);
