@@ -54,12 +54,14 @@ public class For extends Instruction {
                 }
                 return block;
             }
-            for(Sentence update : updates) {
-                if(update.typeSent == TypeSent.EXPRESSION) {
-                    ((Expression) update).exec(envFor);
-                }
-                else if(update.typeSent == TypeSent.INSTRUCTION) {
-                    ((Instruction) update).exec(envFor);
+            if(updates != null) {
+                for(Sentence update : updates) {
+                    if(update.typeSent == TypeSent.EXPRESSION) {
+                        ((Expression) update).exec(envFor);
+                    }
+                    else if(update.typeSent == TypeSent.INSTRUCTION) {
+                        ((Instruction) update).exec(envFor);
+                    }
                 }
             }
             condition = this.condition != null ? this.condition.exec(envFor) : new ReturnType(true, Type.BOOLEAN);
