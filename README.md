@@ -163,4 +163,4 @@ primitive ::=
 
 ## Versión de Intérprete con JFlex y CUP
 Usuario: [brandonT2002](https://github.com/brandonT2002)  
-Repositorio: [MiniJCompiler](https://github.com/brandonT2002/MiniJ)
+Repositorio: [MiniJ](https://github.com/brandonT2002/MiniJ)
