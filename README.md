@@ -1,4 +1,4 @@
-# MiniJCompiler
+# MiniJInterpreter
 ## Intérprete de Código: JavaCC
 Versión minimizada de c++.  
 Implementa patrón de diseño interpreter.
