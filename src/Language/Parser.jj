@@ -229,7 +229,7 @@ Instruction DECLFUNC() : {
     t = TYPE() id = <TK_id> <TK_lpar> l = LISTPARAMS() <TK_rpar> b = ENV()    {return new Function(id.beginLine, id.beginColumn, id.image, l, b, t);        } |
     n = <RW_void> id = <TK_id> <TK_lpar> l = LISTPARAMS() <TK_rpar> b = ENV() {return new Function(n.beginLine, n.beginColumn, id.image, l, b, Type.NULL);} 
 }
-// LISTARGS ::= (TYPE TK_id (',' TYPE TK_id)*)?
+// LISTPARAMS ::= (TYPE TK_id (',' TYPE TK_id)*)?
 ArrayList<Parameter> LISTPARAMS() : {
     Type t;
     Token id;

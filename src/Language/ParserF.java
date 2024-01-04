@@ -212,7 +212,7 @@ painter.FNC(i.beginColumn, i.image.length());
     }
 }
 
-// LISTARGS ::= (TYPE TK_id (',' TYPE TK_id)*)?
+// LISTPARAMS ::= (TYPE TK_id (',' TYPE TK_id)*)?
   final public void LISTPARAMS() throws ParseException {Token id;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case RW_String:
@@ -281,7 +281,7 @@ painter.RW2(i.beginColumn, i.image.length());
     }
 }
 
-// SWITCHSTRUCT ::= 
+// SWITCHSTRUCT ::= 'switch' '(' EXP ')' ENVS
   final public void SWITCHSTRUCT() throws ParseException {Token sw;
     sw = jj_consume_token(RW_switch);
 painter.RW2(sw.beginColumn, sw.image.length());
@@ -291,7 +291,7 @@ painter.RW2(sw.beginColumn, sw.image.length());
     ENVS();
 }
 
-// ENVS ::= 
+// ENVS ::= '{' CASESDEFAULT '}'
   final public void ENVS() throws ParseException {
     COLORLBRC();
     CASESDEFAULT();

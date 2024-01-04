@@ -193,7 +193,7 @@ void DECLFUNC() : {
     TYPE() i = <TK_id> {painter.FNC(i.beginColumn, i.image.length());} COLORLPAR() LISTPARAMS() COLORRPAR() ENV()    |
     i = <RW_void> {painter.RW1(i.beginColumn, i.image.length());} i = <TK_id> {painter.FNC(i.beginColumn, i.image.length());} COLORLPAR() LISTPARAMS() COLORRPAR() ENV() 
 }
-// LISTARGS ::= (TYPE TK_id (',' TYPE TK_id)*)?
+// LISTPARAMS ::= (TYPE TK_id (',' TYPE TK_id)*)?
 void LISTPARAMS() : {
     Token id;
 } {
