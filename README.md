@@ -161,6 +161,14 @@ Implementa patrón de diseño interpreter.
 ## Generación de Parser
 * Ejecutar el comando ```javacc Parser.jj``` en la ubicación del archivo con extensión .jj para generar el código del parser.
 
-## Versión de Intérprete con JFlex y CUP
+## Intérprete con JFlex y CUP
 Usuario: [brandonT2002](https://github.com/brandonT2002)  
 Repositorio: [MiniJ](https://github.com/brandonT2002/MiniJ)
+
+## Intérprete de Pseudocódigo con JFlex y CUP
+Usuario: [bryan967132](https://github.com/bryan967132)  
+Repositorio: [PseudoParser](https://github.com/bryan967132/PseudoParser)
+
+## Traductor a C3D con JFlex y CUP
+Usuario: [bryan967132](https://github.com/bryan967132)  
+Repositorio: [MiniJCompiler](https://github.com/bryan967132/MiniJCompiler)
