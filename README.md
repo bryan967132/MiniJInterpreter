@@ -13,142 +13,142 @@ Implementa patrón de diseño interpreter.
 ![Window](Images/ScreenEclipseTheme.png)
 
 ## Gramática Libre del Contexto
-```java
-INIT := INSTRUCTIONS EOF
+```html
+<INIT> ::= <INSTRUCTIONS> <EOF>
 
-INSTSGLOBAL ::= INSTGLOBAL*
+<INSTSGLOBAL> ::= <INSTGLOBAL>*
 
-INSTGLOBAL ::=
-    CALLMAINFUNC |
-    DECLID       |
-    DECLFUNC     
+<INSTGLOBAL> ::=
+    <CALLMAINFUNC> |
+    <DECLID>       |
+    <DECLFUNC>
 
-CALLMAINFUNC ::= 'main' CALLFUNC ';'
+<CALLMAINFUNC> ::= 'main' <CALLFUNC> ';'
 
-CALLFUNC ::= TK_id '(' LISTARGS ')'
+<CALLFUNC> ::= TK_id '(' <LISTARGS> ')'
 
-LISTARGS ::= (EXP (',' EXP)*)?
+<LISTARGS> ::= (<EXP> (',' <EXP>)*)?
 
-DECLID ::= TYPE INITIDS ';'
+<DECLID> ::= <TYPE> <INITIDS> ';'
 
-INITIDS ::= TK_id ('=' EXP)? (',' TK_id ('=' EXP)?)*
+<INITIDS> ::= TK_id ('=' <EXP>)? (',' TK_id ('=' <EXP>)?)*
 
-DECLFUNC ::=
-    TYPE   TK_id '(' LISTPARAMS ')' ENV |
-    'void' TK_id '(' LISTPARAMS ')' ENV
+<DECLFUNC> ::=
+    <TYPE> TK_id '(' <LISTPARAMS> ')' <ENV> |
+    'void' TK_id '(' <LISTPARAMS> ')' <ENV>
 
-LISTARGS ::= (TYPE TK_id (',' TYPE TK_id)*)?
+<LISTPARAMS> ::= (<TYPE> TK_id (',' <TYPE> TK_id)*)?
 
-IFSTRUCT ::= 'if' '(' EXP ')' ENV ('else' (IFSTRUCT | ENV))?
+<IFSTRUCT> ::= 'if' '(' <EXP> ')' <ENV> ('else' (<IFSTRUCT> | <ENV>))?
 
-SWITCHSTRUCT ::= 'switch' '(' EXP ')' ENVS
+<SWITCHSTRUCT> ::= 'switch' '(' <EXP> ')' <ENVS>
 
-ENVS ::= '{' CASESDEFAULT '}'
+<ENVS> ::= '{' <CASESDEFAULT> '}'
 
-CASESDEFAULT ::= (CASES)? (DEFAULT)?
+<CASESDEFAULT> ::= (<CASES>)? (<DEFAULT>)?
 
-CASES ::= (CASE)+
+<CASES> ::= (<CASE>)+
 
-CASE ::= 'case' EXP ':' (ENV | INSTRUCTIONS)
+<CASE> ::= 'case' <EXP> ':' (<ENV> | <INSTRUCTIONS>)
 
-DEFAULT ::= 'default' ':' (ENV | INSTRUCTIONS)
+<DEFAULT> ::= 'default' ':' (<ENV> | <INSTRUCTIONS>)
 
-LOOPFOR ::= 'for' '(' ARGSFOR ')' ENV
+<LOOPFOR> ::= 'for' '(' <ARGSFOR> ')' <ENV>
 
-ARGSFOR ::= (UPDATESFOR)? ';' (EXP)? ';' (UPDATESFOR)?
+<ARGSFOR> ::= (UPDATESFOR)? ';' (<EXP>)? ';' (UPDATESFOR)?
 
-INITIALIZEFOR ::=
-    TYPE INITIDSFOR |
-    REASIGNS        
+<INITIALIZEFOR> ::=
+    <TYPE> <INITIDSFOR> |
+    <REASIGNS>
 
-INITIDSFOR ::= TK_id '=' EXP (',' TK_id '=' EXP)*
+<INITIDSFOR> ::= TK_id '=' <EXP> (',' TK_id '=' <EXP>)*
 
-REASIGNS ::= REASIGN (',' REASIGN)*
+<REASIGNS> ::= <REASIGN> (',' <REASIGN>)*
 
-UPDATEFOR ::=
-    INCDEC  |
-    REASIGN |
-    ADDSUB  
+<UPDATEFOR> ::=
+    <INCDEC>  |
+    <REASIGN> |
+    <ADDSUB>
 
-LOOPWHILE ::= 'while' '(' EXP ')' ENV
+<LOOPWHILE> ::= 'while' '(' <EXP> ')' <ENV>
 
-LOOPDOWHILE ::= 'do' ENV 'while' '(' EXP ')' ';'
+<LOOPDOWHILE> ::= 'do' <ENV> 'while' '(' <EXP> ')' ';'
 
-REASIGN ::= TK_id '=' EXP
+<REASIGN> ::= TK_id '=' <EXP>
 
-INCDEC ::= TK_id ('++' | '--')
+<INCDEC> ::= TK_id ('++' | '--')
 
-ADDSUB ::= TK_id ('+=' | '-=') EXP
+<ADDSUB> ::= TK_id ('+=' | '-=') <EXP>
 
-PRINT ::= 'PRINT' '(' EXP? ')' ';'
+<PRINT> ::= 'print' '(' <EXP>? ')' ';'
 
-ENV ::= '{' INSTRUCTIONS '}'
+<ENV> ::= '{' <INSTRUCTIONS> '}'
 
-INSTRUCTIONS ::= INSTRUCTION*
+<INSTRUCTIONS> ::= <INSTRUCTION>*
 
-INSTRUCTION ::=
-    DECLID              |
-    IFSTRUCT            |
-    SWITCHSTRUCT        |
-    LOOPFOR             |
-    LOOPWHILE           |
-    LOOPDOWHILE         |
-    REASIGN         ';' |
-    ADDSUB          ';' |
-    INCDEC          ';' |
-    CALLFUNC        ';' |
-    PRINT               |
-    'return' (EXP)? ';' |
-    'continue'      ';' |
-    'break'         ';'
+<INSTRUCTION> ::=
+    <DECLID>              |
+    <IFSTRUCT>            |
+    <SWITCHSTRUCT>        |
+    <LOOPFOR>             |
+    <LOOPWHILE>           |
+    <LOOPDOWHILE>         |
+    <REASIGN>         ';' |
+    <ADDSUB>          ';' |
+    <INCDEC>          ';' |
+    <CALLFUNC>        ';' |
+    <PRINT>               |
+    'return' (<EXP>)? ';' |
+    'continue'        ';' |
+    'break'           ';'
 
-TYPE ::=
+<TYPE> ::=
     RW_String  |
     RW_int     |
     RW_boolean |
     RW_char    |
-    RW_double  
+    RW_double
 
-EXP ::= opOr ('?' opOr ':' opOr)?
+<EXP> ::= <opOr> ('?' <opOr> ':' <opOr>)?
 
-opOr ::= opAnd ('||' opAnd)*
+<opOr> ::= <opAnd> ('||' <opAnd>)*
 
-opAnd ::= opEqu ('&&' opEqu)*
+<opAnd> ::= <opEqu> ('&&' <opEqu>)*
 
-opEqu ::=
-    opCmp ('==' opCmp)* |
-    opCmp ('!=' opCmp)* 
+<opEqu> ::=
+    <opCmp> ('==' <opCmp>)* |
+    <opCmp> ('!=' <opCmp>)*
 
-opCmp ::=
-    opAdd ('<=' opAdd)* |
-    opAdd ('>=' opAdd)* |
-    opAdd ('<' opAdd)*  |
-    opAdd ('>' opAdd)*  
+<opCmp> ::=
+    <opAdd> ('<=' <opAdd>)* |
+    <opAdd> ('>=' <opAdd>)* |
+    <opAdd> ('<' <opAdd>)*  |
+    <opAdd> ('>' <opAdd>)*
 
-opAdd ::=
-    opMult ('+' opMult)* |
-    opMult ('-' opMult)* 
+<opAdd> ::=
+    <opMult> ('+' <opMult>)* |
+    <opMult> ('-' <opMult>)*
 
-opMult ::=
-    unary ('*' unary)* |
-    unary ('/' unary)* 
+<opMult> ::=
+    <unary> ('*' <unary>)* |
+    <unary> ('/' <unary>)*
 
-unary ::=
-    '-' unary |
-    '!' unary |
-    primitive 
+<unary> ::=
+    '-' <unary> |
+    '!' <unary> |
+    <primitive>
 
-primitive ::=
-    INCDEC      |
-    CALLFUNC    |
-    TK_id       |
-    TK_string   |
-    TK_char     |
-    TK_int      |
-    TK_double   |
-    RW_true     |
-    RW_false    |
-    '(' EXP ')' 
+<primitive> ::=
+    <INCDEC>      |
+    <CALLFUNC>    |
+    TK_id         |
+    TK_string     |
+    TK_char       |
+    TK_int        |
+    TK_double     |
+    RW_true       |
+    RW_false      |
+    '(' <EXP> ')'
 ```
 
 ## Instalación JavaCC
