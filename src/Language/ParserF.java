@@ -583,6 +583,14 @@ painter.USEVARIABLE(id.beginColumn, id.image.length());
     EXP();
 }
 
+// CAST ::= TK_lpar TYPE TK_rpar EXP
+  final public void CAST() throws ParseException {
+    COLORLPAR();
+    TYPE();
+    COLORRPAR();
+    EXP();
+}
+
 // PRINT ::= 'PRINT' '(' EXP? ')' ';'
   final public void PRINT() throws ParseException {Token p;
     p = jj_consume_token(RW_print);
@@ -1084,6 +1092,8 @@ painter.SYMBS1(t.beginColumn, t.image.length());
       INCDEC();
     } else if (jj_2_10(2)) {
       CALLFUNC();
+    } else if (jj_2_11(4)) {
+      CAST();
     } else {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TK_id:{
@@ -1235,35 +1245,64 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
     finally { jj_save(9, xla); }
   }
 
-  private boolean jj_3R_TYPE_370_5_27()
+  private boolean jj_2_11(int xla)
+ {
+    jj_la = xla; jj_lastpos = jj_scanpos = token;
+    try { return (!jj_3_11()); }
+    catch(LookaheadSuccess ls) { return true; }
+    finally { jj_save(10, xla); }
+  }
+
+  private boolean jj_3R_INITIDS_184_5_23()
+ {
+    if (jj_scan_token(TK_id)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_INITIDS_184_74_34()) jj_scanpos = xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_INITIDS_184_92_35()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_TYPE_374_5_30()
  {
     if (jj_scan_token(RW_int)) return true;
     return false;
   }
 
-  private boolean jj_3R_TYPE_369_5_26()
+  private boolean jj_3R_TYPE_373_5_22()
+ {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_TYPE_373_5_29()) {
+    jj_scanpos = xsp;
+    if (jj_3R_TYPE_374_5_30()) {
+    jj_scanpos = xsp;
+    if (jj_3R_TYPE_375_5_31()) {
+    jj_scanpos = xsp;
+    if (jj_3R_TYPE_376_5_32()) {
+    jj_scanpos = xsp;
+    if (jj_3R_TYPE_377_5_33()) return true;
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_TYPE_373_5_29()
  {
     if (jj_scan_token(RW_String)) return true;
     return false;
   }
 
-  private boolean jj_3R_TYPE_369_5_21()
+  private boolean jj_3R_DECLID_178_5_15()
  {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_TYPE_369_5_26()) {
-    jj_scanpos = xsp;
-    if (jj_3R_TYPE_370_5_27()) {
-    jj_scanpos = xsp;
-    if (jj_3R_TYPE_371_5_28()) {
-    jj_scanpos = xsp;
-    if (jj_3R_TYPE_372_5_29()) {
-    jj_scanpos = xsp;
-    if (jj_3R_TYPE_373_5_30()) return true;
-    }
-    }
-    }
-    }
+    if (jj_3R_TYPE_373_5_22()) return true;
+    if (jj_3R_INITIDS_184_5_23()) return true;
+    if (jj_scan_token(TK_semicolon)) return true;
     return false;
   }
 
@@ -1273,23 +1312,15 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
     return false;
   }
 
-  private boolean jj_3R_DECLID_178_5_15()
- {
-    if (jj_3R_TYPE_369_5_21()) return true;
-    if (jj_3R_INITIDS_184_5_22()) return true;
-    if (jj_scan_token(TK_semicolon)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_INITIDS_184_92_32()
- {
-    if (jj_scan_token(TK_comma)) return true;
-    return false;
-  }
-
   private boolean jj_3_4()
  {
     if (jj_3R_REASIGN_290_5_18()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_INITIDS_184_92_35()
+ {
+    if (jj_scan_token(TK_comma)) return true;
     return false;
   }
 
@@ -1299,10 +1330,58 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
     return false;
   }
 
+  private boolean jj_3R_primitive_458_5_54()
+ {
+    if (jj_3R_COLORLPAR_476_5_26()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_primitive_457_5_53()
+ {
+    if (jj_scan_token(RW_false)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_primitive_456_5_52()
+ {
+    if (jj_scan_token(RW_true)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_primitive_455_5_51()
+ {
+    if (jj_scan_token(TK_double)) return true;
+    return false;
+  }
+
   private boolean jj_3R_CALLFUNC_170_5_20()
  {
     if (jj_scan_token(TK_id)) return true;
-    if (jj_3R_COLORLPAR_471_5_25()) return true;
+    if (jj_3R_COLORLPAR_476_5_26()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_primitive_454_5_50()
+ {
+    if (jj_scan_token(TK_int)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_primitive_453_5_49()
+ {
+    if (jj_scan_token(TK_char)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_primitive_452_5_48()
+ {
+    if (jj_scan_token(TK_string)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_primitive_451_5_47()
+ {
+    if (jj_scan_token(TK_id)) return true;
     return false;
   }
 
@@ -1318,9 +1397,9 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
     return false;
   }
 
-  private boolean jj_3_10()
+  private boolean jj_3_11()
  {
-    if (jj_3R_CALLFUNC_170_5_20()) return true;
+    if (jj_3R_CAST_306_5_21()) return true;
     return false;
   }
 
@@ -1330,9 +1409,136 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
     return false;
   }
 
+  private boolean jj_3_10()
+ {
+    if (jj_3R_CALLFUNC_170_5_20()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_primitive_448_5_46()
+ {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3_9()) {
+    jj_scanpos = xsp;
+    if (jj_3_10()) {
+    jj_scanpos = xsp;
+    if (jj_3_11()) {
+    jj_scanpos = xsp;
+    if (jj_3R_primitive_451_5_47()) {
+    jj_scanpos = xsp;
+    if (jj_3R_primitive_452_5_48()) {
+    jj_scanpos = xsp;
+    if (jj_3R_primitive_453_5_49()) {
+    jj_scanpos = xsp;
+    if (jj_3R_primitive_454_5_50()) {
+    jj_scanpos = xsp;
+    if (jj_3R_primitive_455_5_51()) {
+    jj_scanpos = xsp;
+    if (jj_3R_primitive_456_5_52()) {
+    jj_scanpos = xsp;
+    if (jj_3R_primitive_457_5_53()) {
+    jj_scanpos = xsp;
+    if (jj_3R_primitive_458_5_54()) return true;
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
   private boolean jj_3_9()
  {
     if (jj_3R_INCDEC_296_5_17()) return true;
+    return false;
+  }
+
+  private boolean jj_3_2()
+ {
+    if (jj_3R_DECLFUNC_193_5_16()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_INITIDS_184_74_34()
+ {
+    if (jj_scan_token(TK_equ)) return true;
+    return false;
+  }
+
+  private boolean jj_3_1()
+ {
+    if (jj_3R_DECLID_178_5_15()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_unary_431_5_45()
+ {
+    if (jj_3R_primitive_448_5_46()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_unary_430_5_44()
+ {
+    if (jj_scan_token(TK_not)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_unary_429_5_43()
+ {
+    if (jj_scan_token(TK_minus)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_unary_429_5_42()
+ {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_unary_429_5_43()) {
+    jj_scanpos = xsp;
+    if (jj_3R_unary_430_5_44()) {
+    jj_scanpos = xsp;
+    if (jj_3R_unary_431_5_45()) return true;
+    }
+    }
+    return false;
+  }
+
+  private boolean jj_3R_opMult_421_5_41()
+ {
+    if (jj_3R_unary_429_5_42()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_opAdd_414_5_40()
+ {
+    if (jj_3R_opMult_421_5_41()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_opCmp_407_5_39()
+ {
+    if (jj_3R_opAdd_414_5_40()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_CAST_306_5_21()
+ {
+    if (jj_3R_COLORLPAR_476_5_26()) return true;
+    if (jj_3R_TYPE_373_5_22()) return true;
+    if (jj_3R_COLORRPAR_482_5_27()) return true;
+    if (jj_3R_EXP_383_5_28()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_opEqu_398_5_38()
+ {
+    if (jj_3R_opCmp_407_5_39()) return true;
     return false;
   }
 
@@ -1348,24 +1554,6 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
     return false;
   }
 
-  private boolean jj_3R_INITIDS_184_74_31()
- {
-    if (jj_scan_token(TK_equ)) return true;
-    return false;
-  }
-
-  private boolean jj_3_2()
- {
-    if (jj_3R_DECLFUNC_193_5_16()) return true;
-    return false;
-  }
-
-  private boolean jj_3_1()
- {
-    if (jj_3R_DECLID_178_5_15()) return true;
-    return false;
-  }
-
   private boolean jj_3R_INCDEC_296_5_17()
  {
     if (jj_scan_token(TK_id)) return true;
@@ -1378,6 +1566,24 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
     return false;
   }
 
+  private boolean jj_3R_opAnd_391_5_37()
+ {
+    if (jj_3R_opEqu_398_5_38()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_opOr_387_5_36()
+ {
+    if (jj_3R_opAnd_391_5_37()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_COLORRPAR_482_5_27()
+ {
+    if (jj_scan_token(TK_rpar)) return true;
+    return false;
+  }
+
   private boolean jj_3R_REASIGN_290_5_18()
  {
     if (jj_scan_token(TK_id)) return true;
@@ -1385,19 +1591,11 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
     return false;
   }
 
-  private boolean jj_3R_DECLFUNC_194_5_24()
+  private boolean jj_3R_DECLFUNC_194_5_25()
  {
     if (jj_scan_token(RW_void)) return true;
     if (jj_scan_token(TK_id)) return true;
-    if (jj_3R_COLORLPAR_471_5_25()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_DECLFUNC_193_5_23()
- {
-    if (jj_3R_TYPE_369_5_21()) return true;
-    if (jj_scan_token(TK_id)) return true;
-    if (jj_3R_COLORLPAR_471_5_25()) return true;
+    if (jj_3R_COLORLPAR_476_5_26()) return true;
     return false;
   }
 
@@ -1405,45 +1603,46 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
  {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_DECLFUNC_193_5_23()) {
+    if (jj_3R_DECLFUNC_193_5_24()) {
     jj_scanpos = xsp;
-    if (jj_3R_DECLFUNC_194_5_24()) return true;
+    if (jj_3R_DECLFUNC_194_5_25()) return true;
     }
     return false;
   }
 
-  private boolean jj_3R_COLORLPAR_471_5_25()
+  private boolean jj_3R_DECLFUNC_193_5_24()
+ {
+    if (jj_3R_TYPE_373_5_22()) return true;
+    if (jj_scan_token(TK_id)) return true;
+    if (jj_3R_COLORLPAR_476_5_26()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_EXP_383_5_28()
+ {
+    if (jj_3R_opOr_387_5_36()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_COLORLPAR_476_5_26()
  {
     if (jj_scan_token(TK_lpar)) return true;
     return false;
   }
 
-  private boolean jj_3R_TYPE_373_5_30()
+  private boolean jj_3R_TYPE_377_5_33()
  {
     if (jj_scan_token(RW_double)) return true;
     return false;
   }
 
-  private boolean jj_3R_TYPE_372_5_29()
+  private boolean jj_3R_TYPE_376_5_32()
  {
     if (jj_scan_token(RW_char)) return true;
     return false;
   }
 
-  private boolean jj_3R_INITIDS_184_5_22()
- {
-    if (jj_scan_token(TK_id)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_INITIDS_184_74_31()) jj_scanpos = xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_INITIDS_184_92_32()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  private boolean jj_3R_TYPE_371_5_28()
+  private boolean jj_3R_TYPE_375_5_31()
  {
     if (jj_scan_token(RW_boolean)) return true;
     return false;
@@ -1473,7 +1672,7 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
 	private static void jj_la1_init_1() {
 	   jj_la1_1 = new int[] {0x0,0x0,0x40000,0x6001,0x100,0x40000,0x100,0x0,0x40000,0x0,0x10000,0x0,0x0,0x0,0x0,0x10000,0x10000,0x0,0x6001,0x0,0x0,0x40000,0x40000,0x0,0x0,0x6001,0x0,0x6001,0x0,0x0,0x0,0x200000,0x1000,0x800,0x30,0x30,0x6c0,0x6c0,0x1,0x1,0xe,0xe,0x6001,0x4000,};
 	}
-  final private JJCalls[] jj_2_rtns = new JJCalls[10];
+  final private JJCalls[] jj_2_rtns = new JJCalls[11];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -1735,7 +1934,7 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
 
   private void jj_rescan_token() {
 	 jj_rescan = true;
-	 for (int i = 0; i < 10; i++) {
+	 for (int i = 0; i < 11; i++) {
 	   try {
 		 JJCalls p = jj_2_rtns[i];
 
@@ -1753,6 +1952,7 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
 			   case 7: jj_3_8(); break;
 			   case 8: jj_3_9(); break;
 			   case 9: jj_3_10(); break;
+			   case 10: jj_3_11(); break;
 			 }
 		   }
 		   p = p.next;

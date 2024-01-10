@@ -7,7 +7,6 @@ PARSER_BEGIN(Parser)
 /* 1. Package e importaciones */
 package Language;
 import java.util.ArrayList;
-import java.util.Arrays;
 import Classes.Abstracts.*;
 import Classes.Expressions.*;
 import Classes.Instructions.*;
@@ -416,6 +415,14 @@ Instruction ADDSUB() : {
 } {
     id = <TK_id> (s = <TK_add> | s = <TK_sub>) exp = EXP() {return new AddSub(id.beginLine, id.beginColumn, id.image, s.image, exp);}
 }
+// CAST ::= TK_lpar TYPE TK_rpar EXP
+Expression CAST() : {
+    Token c;
+    Type t;
+    Expression exp;
+} {
+    c = <TK_lpar> t = TYPE() <TK_rpar> exp = EXP() {return new Cast(c.beginLine, c.beginColumn, exp, t);}
+}
 // PRINT ::= 'PRINT' '(' EXP? ')' ';'
 Instruction PRINT() : {
     Token p;
@@ -612,6 +619,7 @@ Expression primitive() : {
 } {
     LOOKAHEAD(2) exp = INCDEC()     {return exp;} |
     LOOKAHEAD(2) exp = CALLFUNC()   {return exp;} |
+    LOOKAHEAD(4) exp = CAST()       {return exp;} |
     p = <TK_id>                     {return new AccessID(p.beginLine, p.beginColumn, p.image);} |
     p = <TK_string>                 {return new Primitive(p.beginLine, p.beginColumn, p.image.substring(1, p.image.length() - 1), Type.STRING);} |
     p = <TK_char>                   {return new Primitive(p.beginLine, p.beginColumn, p.image.substring(1, p.image.length() - 1), Type.CHAR);  } |
