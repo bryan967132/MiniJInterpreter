@@ -80,7 +80,7 @@ Implementa patrón de diseño interpreter.
 
 <ADDSUB> ::= TK_id ('+=' | '-=') <EXP>
 
-<CAST> ::= TK_lpar <TYPE> TK_rpar <EXP>
+<CAST> ::= '(' <TYPE> ')' <EXP>
 
 <PRINT> ::= 'print' '(' <EXP>? ')' ';'
 
