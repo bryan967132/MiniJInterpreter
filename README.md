@@ -80,6 +80,8 @@ Implementa patrón de diseño interpreter.
 
 <ADDSUB> ::= TK_id ('+=' | '-=') <EXP>
 
+<CAST> ::= TK_lpar <TYPE> TK_rpar <EXP>
+
 <PRINT> ::= 'print' '(' <EXP>? ')' ';'
 
 <ENV> ::= '{' <INSTRUCTIONS> '}'
@@ -141,6 +143,7 @@ Implementa patrón de diseño interpreter.
 <primitive> ::=
     <INCDEC>      |
     <CALLFUNC>    |
+    <CAST>        |
     TK_id         |
     TK_string     |
     TK_char       |
