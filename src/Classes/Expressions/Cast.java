@@ -70,20 +70,9 @@ public class Cast extends Expression {
                     env.setError("La cadena \"" + value.value + "\" tiene longitud diferente de 1 para castear a \"" + destiny.getValue() + "\"", exp.line, exp.column);
                     return new ReturnType("null", Type.NULL);
                 }
-                env.setError("No hay casteo de \"" + value.type.getValue() + "\" a \"" + destiny.getValue() + "\"", exp.line, exp.column);
-                return new ReturnType("null", Type.NULL);
             }
-            if(destiny == Type.BOOLEAN) {
-                if(value.type == Type.STRING) {
-                    if(value.value.toString().equals("true") || value.value.toString().equals("false")) {
-                        return new ReturnType(value.value.toString().equals("true"), destiny);
-                    }
-                    env.setError("La cadena \"" + value.value + "\" debe ser \"true\" o \"false\" para castear a \"" + destiny.getValue() + "\"", exp.line, exp.column);
-                    return new ReturnType("null", Type.NULL);
-                }
-                env.setError("No hay casteo de \"" + value.type.getValue() + "\" a \"" + destiny.getValue() + "\"", exp.line, exp.column);
-                return new ReturnType("null", Type.NULL);
-            }
+            env.setError("No hay casteo de \"" + value.type.getValue() + "\" a \"" + destiny.getValue() + "\"", exp.line, exp.column);
+            return new ReturnType("null", Type.NULL);
         }
         env.setError("Error: No hay casteo de valores null", line, column);
         return new ReturnType("null", Type.NULL);
