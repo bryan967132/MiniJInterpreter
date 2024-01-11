@@ -301,9 +301,9 @@ void ADDSUB() : {
 } {
     id = <TK_id> {painter.USEVARIABLE(id.beginColumn, id.image.length());} (<TK_add> | <TK_sub>) EXP()
 }
-// CAST ::= TK_lpar TYPE TK_rpar EXP
+// CAST ::= TYPE TK_lpar EXP TK_rpar
 void CAST() : {} {
-    COLORLPAR() TYPE() COLORRPAR() EXP()
+    TYPE() COLORLPAR() EXP() COLORRPAR()
 }
 // PRINT ::= 'PRINT' '(' EXP? ')' ';'
 void PRINT() : {
@@ -447,7 +447,7 @@ void primitive() : {
 } {
     LOOKAHEAD(2) INCDEC()         |
     LOOKAHEAD(2) CALLFUNC()       |
-    LOOKAHEAD(4) CAST() |
+    LOOKAHEAD(2) CAST()           |
     tr = <TK_id>                  {painter.USEVARIABLE(tr.beginColumn, tr.image.length());} |
     tr = <TK_string>              {painter.STRING(tr.beginColumn, tr.image.length());     } |
     tr = <TK_char>                {painter.CHAR(tr.beginColumn, tr.image.length());       } |
