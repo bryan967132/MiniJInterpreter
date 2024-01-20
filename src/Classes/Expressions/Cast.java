@@ -22,10 +22,10 @@ public class Cast extends Expression {
                     return new ReturnType((int) Double.parseDouble(value.value.toString()), destiny);
                 }
                 if(value.type == Type.STRING) {
-                    if(isValidNumericalString(value.value.toString())) {
+                    if(isValidIntString(value.value.toString())) {
                         return new ReturnType(Integer.parseInt(value.value.toString()), destiny);
                     }
-                    env.setError("La cadena \"" + value.value + "\" no tiene formato numérico para castear a \"" + destiny.getValue() + "\"", exp.line, exp.column);
+                    env.setError("La cadena \"" + value.value + "\" no tiene formato numérico entero para castear a \"" + destiny.getValue() + "\"", exp.line, exp.column);
                     return new ReturnType("null", Type.NULL);
                 }
                 if(value.type == Type.CHAR) {
@@ -39,7 +39,7 @@ public class Cast extends Expression {
                     return new ReturnType(Double.parseDouble(value.value.toString()), destiny);
                 }
                 if(value.type == Type.STRING) {
-                    if(isValidNumericalString(value.value.toString())) {
+                    if(isValidIntString(value.value.toString()) || isValidDoubleString(value.value.toString())) {
                         return new ReturnType(Double.parseDouble(value.value.toString()), destiny);
                     }
                     env.setError("La cadena \"" + value.value + "\" no tiene formato numérico para castear a \"" + destiny.getValue() + "\"", exp.line, exp.column);
@@ -77,8 +77,14 @@ public class Cast extends Expression {
         env.setError("Error: No hay casteo de valores null", line, column);
         return new ReturnType("null", Type.NULL);
     }
-    private boolean isValidNumericalString(String num) {
-        String expresionRegular = "^\\d+(\\.\\d+)?$";
+    private boolean isValidIntString(String num) {
+        String expresionRegular = "^\\d+$";
+        Pattern patternValidador = Pattern.compile(expresionRegular);
+        Matcher matcher = patternValidador.matcher(num);
+        return matcher.matches();
+    }
+    private boolean isValidDoubleString(String num) {
+        String expresionRegular = "^\\d+\\.\\d+$";
         Pattern patternValidador = Pattern.compile(expresionRegular);
         Matcher matcher = patternValidador.matcher(num);
         return matcher.matches();
