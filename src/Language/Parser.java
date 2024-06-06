@@ -1332,12 +1332,12 @@ e1 = new Arithmetic(e1.line, e1.column, e1, s.image, e2);
         }
       case TK_string:{
         p = jj_consume_token(TK_string);
-{if ("" != null) return new Primitive(p.beginLine, p.beginColumn, p.image.substring(1, p.image.length() - 1), Type.STRING);}
+{if ("" != null) return new Primitive(p.beginLine, p.beginColumn, p.image, Type.STRING);}
         break;
         }
       case TK_char:{
         p = jj_consume_token(TK_char);
-{if ("" != null) return new Primitive(p.beginLine, p.beginColumn, p.image.substring(1, p.image.length() - 1), Type.CHAR);}
+{if ("" != null) return new Primitive(p.beginLine, p.beginColumn, p.image, Type.CHAR);}
         break;
         }
       case TK_int:{

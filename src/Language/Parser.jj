@@ -51,8 +51,8 @@ TOKEN : {
 
 // Valores
 TOKEN : {
-    <TK_char   : "'"((~["\n","\'","\\"])|(["\\"])(~[]))"'">      |
-    <TK_string : "\""(((~["\n","\"","\\"])|(["\\"])(~[]))*)"\""> |
+    <TK_char   : "'"((~["\n","\'","\\"])|(["\\"])(~[]))"'">      {matchedToken.image = matchedToken.image.substring(1, matchedToken.image.length() - 1);} |
+    <TK_string : "\""(((~["\n","\"","\\"])|(["\\"])(~[]))*)"\""> {matchedToken.image = matchedToken.image.substring(1, matchedToken.image.length() - 1);} |
     <TK_int    : (["0"-"9"])+>                                   |
     <TK_double : (["0"-"9"])+"."(["0"-"9"])+>                    
 }
@@ -620,8 +620,8 @@ Expression primitive() : {
     LOOKAHEAD(2) exp = CALLFUNC()   {return exp;} |
     LOOKAHEAD(2) exp = CAST()       {return exp;} |
     p = <TK_id>                     {return new AccessID(p.beginLine, p.beginColumn, p.image);} |
-    p = <TK_string>                 {return new Primitive(p.beginLine, p.beginColumn, p.image.substring(1, p.image.length() - 1), Type.STRING);} |
-    p = <TK_char>                   {return new Primitive(p.beginLine, p.beginColumn, p.image.substring(1, p.image.length() - 1), Type.CHAR);  } |
+    p = <TK_string>                 {return new Primitive(p.beginLine, p.beginColumn, p.image, Type.STRING); } |
+    p = <TK_char>                   {return new Primitive(p.beginLine, p.beginColumn, p.image, Type.CHAR);   } |
     p = <TK_int>                    {return new Primitive(p.beginLine, p.beginColumn, p.image, Type.INT);    } |
     p = <TK_double>                 {return new Primitive(p.beginLine, p.beginColumn, p.image, Type.DOUBLE); } |
     p = <RW_true>                   {return new Primitive(p.beginLine, p.beginColumn, p.image, Type.BOOLEAN);} |
