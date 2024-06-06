@@ -508,8 +508,7 @@ Type TYPE() : {} {
 Expression EXP() : {
     Expression c, y, n;
 } {
-    c = opOr()
-    (
+    c = opOr() (
         <TK_question> y = opOr() <TK_colon> n = opOr() {c = new Ternary(c.line, c.column, c, y, n);}
     )? {return c;}
 }
