@@ -15,15 +15,15 @@ import Language.Parser;
 public class Test {
     public static void main(String[] args) throws ParseException, Exception {
         try {
-            File archivo = new File("./Inputs/Input1.minij");
+            File archivo = new File("./Inputs/Ackermann.minij");
             InputStream inputStream = new FileInputStream(archivo);
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
             Parser parser = new Parser(inputStreamReader);
-            parser.parse();
+            ArrayList<Instruction> execute = parser.parse();
             Classes.Utils.Outs.printConsole = new ArrayList<>();
             Env global = new Env(null, "Global");
             MainMethod mainMethod = null;
-            for (Instruction instruction : parser.execute) {
+            for (Instruction instruction : execute) {
                 try {
                     if (instruction.typeInst == TypeInst.MAIN) {
                         mainMethod = (MainMethod) instruction;

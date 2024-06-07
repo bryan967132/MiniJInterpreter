@@ -18,7 +18,6 @@ import Classes.Utils.TypeError;
 import Classes.Utils.Outs;
 public class Parser {
 /* 2. Configuraciones para el analisis (Operaciones y Declaraciones) */
-    public ArrayList<Instruction> execute;
 }
 
 PARSER_END(Parser)
@@ -133,13 +132,17 @@ SKIP : {
     <(~[])> {Outs.errors.add(Outs.newError(input_stream.line, input_stream.column, TypeError.LEXICAL, "Caracter no reconocido. \"" + image + "\""));}
 }
 
-void parse() : {} {
-    INIT()
+ArrayList<Instruction> parse() : {
+    ArrayList<Instruction> ins;
+} {
+    ins = INIT() {return ins;}
 }
 
 // INIT := INSTRUCTIONS EOF
-void INIT() : {} {
-	execute = INSTSGLOBAL() <EOF>
+ArrayList<Instruction> INIT() : {
+    ArrayList<Instruction> ins;
+} {
+	ins = INSTSGLOBAL() <EOF> {return ins;}
 }
 // INSTSGLOBAL ::= INSTGLOBAL*
 ArrayList<Instruction> INSTSGLOBAL() : {

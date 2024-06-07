@@ -10,7 +10,11 @@ import Painter.WordPainter;
 public class ParserF {
 /* 2. Configuraciones para el analisis (Operaciones y Declaraciones) */
     int nIB = 0;
-    public static WordPainter painter;
+    protected static WordPainter painter;
+    public ParserF(WordPainter painter, java.io.InputStream stream) {
+        this(stream, null);
+        ParserF.painter = painter;
+    }
 }
 
 PARSER_END(ParserF)

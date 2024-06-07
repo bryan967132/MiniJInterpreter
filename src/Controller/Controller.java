@@ -46,8 +46,7 @@ public class Controller {
             painter.setStyle(editor);
             byte[] bytes = input.getBytes("utf-8");
             InputStream inputStream = new ByteArrayInputStream(bytes);
-            ParserF parser = new ParserF(inputStream);
-            ParserF.painter = painter;
+            ParserF parser = new ParserF(painter, inputStream);
             parser.parse();
         }
         catch(Exception e) {}
@@ -61,10 +60,10 @@ public class Controller {
             byte[] bytes = input.getBytes("utf-8");
             InputStream inputStream = new ByteArrayInputStream(bytes);
             Parser parser = new Parser(inputStream);
-            parser.parse();
+            ArrayList<Instruction> execute = parser.parse();
             Env global = new Env(null, "Global");
             MainMethod mainMethod = null;
-            for (Instruction instruction : parser.execute) {
+            for (Instruction instruction : execute) {
                 try {
                     if (instruction.typeInst == TypeInst.MAIN) {
                         mainMethod = (MainMethod) instruction;
