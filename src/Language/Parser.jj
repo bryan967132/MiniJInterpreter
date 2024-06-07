@@ -16,6 +16,7 @@ import Classes.Utils.Parameter;
 import Classes.Utils.Type;
 import Classes.Utils.TypeError;
 import Classes.Utils.Outs;
+@SuppressWarnings({"unused", "unchecked"})
 public class Parser {
 /* 2. Configuraciones para el analisis (Operaciones y Declaraciones) */
 }
