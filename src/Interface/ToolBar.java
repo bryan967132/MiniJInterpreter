@@ -100,7 +100,7 @@ public class ToolBar extends JPanel implements MouseListener {
             e.printStackTrace();
         }
         JFileChooser file = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos JavaCraft (*.jc)", "jc");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos MiniJ (*.mj)", "mj");
         file.setFileFilter(filter);
         file.setMultiSelectionEnabled(true);
         int selection = file.showOpenDialog(null);
@@ -131,7 +131,7 @@ public class ToolBar extends JPanel implements MouseListener {
         if (seleccion == JFileChooser.APPROVE_OPTION) {
             File olcFile = file.getSelectedFile();
             String name;
-            String message = "Nombre del Archivo JavaCraft [.jc]:";
+            String message = "Nombre del Archivo MiniJ [.mj]:";
             ImageIcon icon = new ImageIcon(Icons.FILE1);
             Image img = icon.getImage();
             img = img.getScaledInstance(40, 40, Image.SCALE_DEFAULT);
@@ -141,10 +141,10 @@ public class ToolBar extends JPanel implements MouseListener {
                 name = (String) JOptionPane.showInputDialog(null, message, "Nuevo Proyecto", JOptionPane.PLAIN_MESSAGE, icon, null, null);
                 if(name == null) break;
                 else if(name.replace(" ", "").equals("")) {
-                    message = "Debe Ingresar un Nombre.\nNombre del Archivo JavaCraft [.jc]:";
+                    message = "Debe Ingresar un Nombre.\nNombre del Archivo MiniJ [.mj]:";
                     continue;
                 }
-                File auxiliar = new File(olcFile.getAbsolutePath() + "\\" + name + ".jc");
+                File auxiliar = new File(olcFile.getAbsolutePath() + "\\" + name + ".mj");
                 if(!auxiliar.exists()) {
                     try {
                         BufferedWriter writer = new BufferedWriter(
@@ -164,7 +164,7 @@ public class ToolBar extends JPanel implements MouseListener {
                     catch(Exception e1) {}
                     break;
                 }
-                message = "El nuevo archivo no puede llamarse\ncon el mismo nombre de uno existente\nen el mismo directorio.\nNombre del Archivo JavaCraft [.jc]:";
+                message = "El nuevo archivo no puede llamarse\ncon el mismo nombre de uno existente\nen el mismo directorio.\nNombre del Archivo MiniJ [.mj]:";
             } while(true);
         }
     }
