@@ -19,6 +19,9 @@ import Classes.Utils.Outs;
 @SuppressWarnings({"unused", "unchecked"})
 public class Parser {
 /* 2. Configuraciones para el analisis (Operaciones y Declaraciones) */
+    public Parser(String input) throws java.io.UnsupportedEncodingException {
+        this(new java.io.ByteArrayInputStream(input.getBytes("utf-8")), null);
+    }
 }
 
 PARSER_END(Parser)

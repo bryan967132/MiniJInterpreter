@@ -7,8 +7,8 @@ public class ParserF implements ParserFConstants {
 /* 2. Configuraciones para el analisis (Operaciones y Declaraciones) */
     int nIB = 0;
     protected static WordPainter painter;
-    public ParserF(WordPainter painter, java.io.InputStream stream) {
-        this(stream, null);
+    public ParserF(String input, WordPainter painter) throws java.io.UnsupportedEncodingException {
+        this(new java.io.ByteArrayInputStream(input.getBytes("utf-8")), null);
         ParserF.painter = painter;
     }
 
