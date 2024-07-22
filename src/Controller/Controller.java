@@ -8,8 +8,6 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import javax.swing.JTextPane;
@@ -44,9 +42,7 @@ public class Controller {
             String input = doc.getText(0,doc.getLength());
             WordPainter painter = new WordPainter();
             painter.setStyle(editor);
-            byte[] bytes = input.getBytes("utf-8");
-            InputStream inputStream = new ByteArrayInputStream(bytes);
-            ParserF parser = new ParserF(painter, inputStream);
+            ParserF parser = new ParserF(input, painter);
             parser.parse();
         }
         catch(Exception e) {}
@@ -57,9 +53,7 @@ public class Controller {
             Outs.resetOuts();
             StyledDocument doc = editor.getStyledDocument();
             String input = doc.getText(0,doc.getLength());
-            byte[] bytes = input.getBytes("utf-8");
-            InputStream inputStream = new ByteArrayInputStream(bytes);
-            Parser parser = new Parser(inputStream);
+            Parser parser = new Parser(input);
             ArrayList<Instruction> execute = parser.parse();
             Env global = new Env(null, "Global");
             MainMethod mainMethod = null;
