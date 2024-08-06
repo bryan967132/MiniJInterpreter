@@ -26,6 +26,7 @@ public class Colors {
 	public static Color USEFNC        = ColorsChoosen.getUseFNC(n);
 	public static Color COMMENT       = ColorsChoosen.getComment(n);
 	public static Color VARIABLE      = ColorsChoosen.getVariable(n);
+	public static Color ATTRIB        = ColorsChoosen.getAttrib(n);
 	public static Color USEVARIABLE   = ColorsChoosen.getUseVariable(n);
 	public static Color PAR1          = ColorsChoosen.getPar1(n);
 	public static Color PAR2          = ColorsChoosen.getPar2(n);
