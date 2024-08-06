@@ -9,34 +9,27 @@ public class Relational extends Expression {
     private String sign;
     private Expression exp2;
     public Relational(int line, int column, Expression exp1, String sign, Expression exp2) {
-        super(line, column, TypeExp.RELATIONAL_OP);
+        super(line, column, TypeExp.RELATIONAL);
         this.exp1 = exp1;
         this.sign = sign;
         this.exp2 = exp2;
     }
     public ReturnType exec(Env env) {
-        switch(this.sign) {
-            case "==":
-                return equal(env);
-            case "!=":
-                return notEqual(env);
-            case ">=":
-                return moreEqual(env);
-            case "<=":
-                return lessEqual(env);
-            case ">":
-                return more(env);
-            case "<":
-                return less(env);
-            default:
-                return new ReturnType("null", Type.NULL);
-        }
+        return switch(this.sign) {
+            case "==" -> equal(env);
+            case "!=" -> notEqual(env);
+            case ">=" -> moreEqual(env);
+            case "<=" -> lessEqual(env);
+            case ">" -> more(env);
+            case "<" -> less(env);
+            default -> new ReturnType("null", Type.NULL);
+        };
     }
     public ReturnType equal(Env env) {
         ReturnType value1 = exp1.exec(env);
         ReturnType value2 = exp2.exec(env);
-        if(value1.type == Type.INT || value1.type == Type.DOUBLE || value1.type == Type.CHAR) {
-            if(value2.type == Type.INT || value2.type == Type.DOUBLE || value2.type == Type.CHAR) {
+        if(value1.type1 == Type.INT || value1.type1 == Type.DOUBLE || value1.type1 == Type.CHAR) {
+            if(value2.type1 == Type.INT || value2.type1 == Type.DOUBLE || value2.type1 == Type.CHAR) {
                 value1 = getValue(value1);
                 value2 = getValue(value2);
                 return new ReturnType(Double.parseDouble(value1.value.toString()) == Double.parseDouble(value2.value.toString()), Type.BOOLEAN);
@@ -44,7 +37,7 @@ public class Relational extends Expression {
             env.setError("Los tipos no son válidos para operaciones relacionales", exp2.line, exp2.column);
             return new ReturnType("null", Type.NULL);
         }
-        if(value1.type == value2.type && value1.type == Type.STRING) {
+        if(value1.type1 == value2.type1 && value1.type1 == Type.STRING) {
             return new ReturnType(value1.value.toString().equals(value2.value.toString()), Type.BOOLEAN);
         }
         env.setError("Los tipos no son válidos para operaciones relacionales", exp1.line, exp1.column);
@@ -53,8 +46,8 @@ public class Relational extends Expression {
     public ReturnType notEqual(Env env) {
         ReturnType value1 = exp1.exec(env);
         ReturnType value2 = exp2.exec(env);
-        if(value1.type == Type.INT || value1.type == Type.DOUBLE || value1.type == Type.CHAR) {
-            if(value2.type == Type.INT || value2.type == Type.DOUBLE || value2.type == Type.CHAR) {
+        if(value1.type1 == Type.INT || value1.type1 == Type.DOUBLE || value1.type1 == Type.CHAR) {
+            if(value2.type1 == Type.INT || value2.type1 == Type.DOUBLE || value2.type1 == Type.CHAR) {
                 value1 = getValue(value1);
                 value2 = getValue(value2);
                 return new ReturnType(Double.parseDouble(value1.value.toString()) != Double.parseDouble(value2.value.toString()), Type.BOOLEAN);
@@ -62,7 +55,7 @@ public class Relational extends Expression {
             env.setError("Los tipos no son válidos para operaciones relacionales", exp2.line, exp2.column);
             return new ReturnType("null", Type.NULL);
         }
-        if(value1.type == value2.type && value1.type == Type.STRING) {
+        if(value1.type1 == value2.type1 && value1.type1 == Type.STRING) {
             return new ReturnType(!value1.value.toString().equals(value2.value.toString()), Type.BOOLEAN);
         }
         env.setError("Los tipos no son válidos para operaciones relacionales", exp1.line, exp1.column);
@@ -71,8 +64,8 @@ public class Relational extends Expression {
     public ReturnType moreEqual(Env env) {
         ReturnType value1 = exp1.exec(env);
         ReturnType value2 = exp2.exec(env);
-        if(value1.type == Type.INT || value1.type == Type.DOUBLE || value1.type == Type.CHAR) {
-            if(value2.type == Type.INT || value2.type == Type.DOUBLE || value2.type == Type.CHAR) {
+        if(value1.type1 == Type.INT || value1.type1 == Type.DOUBLE || value1.type1 == Type.CHAR) {
+            if(value2.type1 == Type.INT || value2.type1 == Type.DOUBLE || value2.type1 == Type.CHAR) {
                 value1 = getValue(value1);
                 value2 = getValue(value2);
                 return new ReturnType(Double.parseDouble(value1.value.toString()) >= Double.parseDouble(value2.value.toString()), Type.BOOLEAN);
@@ -80,7 +73,7 @@ public class Relational extends Expression {
             env.setError("Los tipos no son válidos para operaciones relacionales", exp2.line, exp2.column);
             return new ReturnType("null", Type.NULL);
         }
-        if(value1.type == value2.type && value1.type == Type.STRING) {
+        if(value1.type1 == value2.type1 && value1.type1 == Type.STRING) {
             return new ReturnType(value1.value.toString().compareTo(value2.value.toString()) >= 0, Type.BOOLEAN);
         }
         env.setError("Los tipos no son válidos para operaciones relacionales", exp1.line, exp1.column);
@@ -89,8 +82,8 @@ public class Relational extends Expression {
     public ReturnType lessEqual(Env env) {
         ReturnType value1 = exp1.exec(env);
         ReturnType value2 = exp2.exec(env);
-        if(value1.type == Type.INT || value1.type == Type.DOUBLE || value1.type == Type.CHAR) {
-            if(value2.type == Type.INT || value2.type == Type.DOUBLE || value2.type == Type.CHAR) {
+        if(value1.type1 == Type.INT || value1.type1 == Type.DOUBLE || value1.type1 == Type.CHAR) {
+            if(value2.type1 == Type.INT || value2.type1 == Type.DOUBLE || value2.type1 == Type.CHAR) {
                 value1 = getValue(value1);
                 value2 = getValue(value2);
                 return new ReturnType(Double.parseDouble(value1.value.toString()) <= Double.parseDouble(value2.value.toString()), Type.BOOLEAN);
@@ -98,7 +91,7 @@ public class Relational extends Expression {
             env.setError("Los tipos no son válidos para operaciones relacionales", exp2.line, exp2.column);
             return new ReturnType("null", Type.NULL);
         }
-        if(value1.type == value2.type && value1.type == Type.STRING) {
+        if(value1.type1 == value2.type1 && value1.type1 == Type.STRING) {
             return new ReturnType(value1.value.toString().compareTo(value2.value.toString()) <= 0, Type.BOOLEAN);
         }
         env.setError("Los tipos no son válidos para operaciones relacionales", exp1.line, exp1.column);
@@ -107,8 +100,8 @@ public class Relational extends Expression {
     public ReturnType more(Env env) {
         ReturnType value1 = exp1.exec(env);
         ReturnType value2 = exp2.exec(env);
-        if(value1.type == Type.INT || value1.type == Type.DOUBLE || value1.type == Type.CHAR) {
-            if(value2.type == Type.INT || value2.type == Type.DOUBLE || value2.type == Type.CHAR) {
+        if(value1.type1 == Type.INT || value1.type1 == Type.DOUBLE || value1.type1 == Type.CHAR) {
+            if(value2.type1 == Type.INT || value2.type1 == Type.DOUBLE || value2.type1 == Type.CHAR) {
                 value1 = getValue(value1);
                 value2 = getValue(value2);
                 return new ReturnType(Double.parseDouble(value1.value.toString()) > Double.parseDouble(value2.value.toString()), Type.BOOLEAN);
@@ -116,7 +109,7 @@ public class Relational extends Expression {
             env.setError("Los tipos no son válidos para operaciones relacionales", exp2.line, exp2.column);
             return new ReturnType("null", Type.NULL);
         }
-        if(value1.type == value2.type && value1.type == Type.STRING) {
+        if(value1.type1 == value2.type1 && value1.type1 == Type.STRING) {
             return new ReturnType(value1.value.toString().compareTo(value2.value.toString()) > 0, Type.BOOLEAN);
         }
         env.setError("Los tipos no son válidos para operaciones relacionales", exp1.line, exp1.column);
@@ -125,8 +118,8 @@ public class Relational extends Expression {
     public ReturnType less(Env env) {
         ReturnType value1 = exp1.exec(env);
         ReturnType value2 = exp2.exec(env);
-        if(value1.type == Type.INT || value1.type == Type.DOUBLE || value1.type == Type.CHAR) {
-            if(value2.type == Type.INT || value2.type == Type.DOUBLE || value2.type == Type.CHAR) {
+        if(value1.type1 == Type.INT || value1.type1 == Type.DOUBLE || value1.type1 == Type.CHAR) {
+            if(value2.type1 == Type.INT || value2.type1 == Type.DOUBLE || value2.type1 == Type.CHAR) {
                 value1 = getValue(value1);
                 value2 = getValue(value2);
                 return new ReturnType(Double.parseDouble(value1.value.toString()) < Double.parseDouble(value2.value.toString()), Type.BOOLEAN);
@@ -134,13 +127,13 @@ public class Relational extends Expression {
             env.setError("Los tipos no son válidos para operaciones relacionales", exp2.line, exp2.column);
             return new ReturnType("null", Type.NULL);
         }
-        if(value1.type == value2.type && value1.type == Type.STRING) {
+        if(value1.type1 == value2.type1 && value1.type1 == Type.STRING) {
             return new ReturnType(value1.value.toString().compareTo(value2.value.toString()) < 0, Type.BOOLEAN);
         }
         env.setError("Los tipos no son válidos para operaciones relacionales", exp1.line, exp1.column);
         return new ReturnType("null", Type.NULL);
     }
     public ReturnType getValue(ReturnType value) {
-        return value.type == Type.CHAR ? new ReturnType((int) value.value.toString().charAt(0), Type.INT) : value;
+        return value.type1 == Type.CHAR ? new ReturnType((int) value.value.toString().charAt(0), Type.INT) : value;
     }
 }

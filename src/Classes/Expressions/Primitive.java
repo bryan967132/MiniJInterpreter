@@ -13,20 +13,19 @@ public class Primitive extends Expression {
         this.type = type;
     }
     public ReturnType exec(Env env) {
-        switch(type) {
-            case INT:
-                return new ReturnType(Integer.parseInt(value.toString()), type);
-            case DOUBLE:
-                return new ReturnType(Double.parseDouble(value.toString()), type);
-            case BOOLEAN:
-                return new ReturnType(value.toString().equals("true"), type);
-            default:
-                value = value.toString().replace("\\n", "\n");
-                value = value.toString().replace("\\t", "\t");
-                value = value.toString().replace("\\\"", "\"");
-                value = value.toString().replace("\\'", "\'");
-                value = value.toString().replace("\\\\", "\\");
-                return new ReturnType(value.toString(), type);
-        }
+        return switch(type) {
+            case INT -> new ReturnType(Integer.parseInt(value.toString()), type);
+            case DOUBLE -> new ReturnType(Double.parseDouble(value.toString()), type);
+            case BOOLEAN -> new ReturnType(value.toString().equals("true"), type);
+            default -> new ReturnType(getValueStr(), type);
+        };
+    }
+    public String getValueStr() {
+        return value.toString()
+            .replace("\\n", "\n")
+            .replace("\\t", "\t")
+            .replace("\\\"", "\"")
+            .replace("\\'", "\'")
+            .replace("\\\\", "\\");
     }
 }

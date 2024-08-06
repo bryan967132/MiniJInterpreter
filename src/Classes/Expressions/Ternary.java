@@ -16,7 +16,7 @@ public class Ternary extends Expression {
     }
     public ReturnType exec(Env env) {
         ReturnType condition = this.condition.exec(env);
-        if(condition.type != Type.BOOLEAN) {
+        if(condition.type1 != Type.BOOLEAN) {
             env.setError("El tipo de dato de la condición no es aceptable", line, column);
             return new ReturnType("null", Type.NULL);
         }
