@@ -11,7 +11,7 @@ import Classes.Utils.TypeSent;
 public class Block extends Instruction {
     ArrayList<Sentence> instructions;
     public Block(int line, int column, ArrayList<Sentence> instructions) {
-        super(line, column, TypeInst.BLOCK_INST);
+        super(line, column, TypeInst.BLOCK);
         this.instructions = instructions;
     }
     public ReturnType exec(Env env) {

@@ -15,7 +15,7 @@ public class For extends Instruction {
     private ArrayList<Sentence> updates;
     private Block instructions;
     public For(int line, int column, InitializeFor inits, Expression condition, ArrayList<Sentence> updates, Block instructions) {
-        super(line, column, TypeInst.LOOP_FOR);
+        super(line, column, TypeInst.FOR);
         this.inits = inits;
         this.condition = condition;
         this.updates = updates;
@@ -33,7 +33,7 @@ public class For extends Instruction {
                 }
             }
         }
-        ReturnType condition = this.condition != null ? this.condition.exec(envFor) : new ReturnType(true, Type.BOOLEAN);
+        ReturnType condition = this.condition != null ? this.condition.exec(envFor) : new ReturnType("true", Type.BOOLEAN);
         while(Boolean.parseBoolean(condition.value.toString())) {
             ReturnType block = instructions.exec(envFor);
             if(block != null) {
@@ -46,7 +46,7 @@ public class For extends Instruction {
                             ((Instruction) update).exec(envFor);
                         }
                     }
-                    condition = this.condition != null ? this.condition.exec(envFor) : new ReturnType(true, Type.BOOLEAN);
+                    condition = this.condition != null ? this.condition.exec(envFor) : new ReturnType("true", Type.BOOLEAN);
                     continue;
                 }
                 else if(block.value == TypeInst.BREAK) {
@@ -64,7 +64,7 @@ public class For extends Instruction {
                     }
                 }
             }
-            condition = this.condition != null ? this.condition.exec(envFor) : new ReturnType(true, Type.BOOLEAN);
+            condition = this.condition != null ? this.condition.exec(envFor) : new ReturnType("true", Type.BOOLEAN);
         }
         return null;
     }
