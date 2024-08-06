@@ -5,10 +5,10 @@ public class Outs {
     public static ArrayList<String> printConsole = new ArrayList<>();
     public static ArrayList<Error> errors = new ArrayList<>();
     public static String getStringOuts() {
-        String out = printConsole.stream().map(Object::toString).collect(Collectors.joining("\n"));
+        String out = printConsole.stream().map(Object::toString).collect(Collectors.joining());
         if(errors.size() > 0) {
             if(!out.equals("")) {
-                out += "\n\n↳ ERRORES\n";
+                out += (out.toCharArray()[out.length() - 1] != '\n' ? "\n" : "") + "\n↳ ERRORES\n";
             } else {
                 out += "↳ ERRORES\n";
             }

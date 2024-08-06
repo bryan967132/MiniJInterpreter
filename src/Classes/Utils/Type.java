@@ -5,6 +5,7 @@ public enum Type {
     BOOLEAN ("boolean") ,
     CHAR    ("char"   ) ,
     STRING  ("String" ) ,
+    VECTOR  ("Vector" ) ,
     NULL    ("null"   ) ;
 
     private String value;
