@@ -3,16 +3,16 @@ main inicio();
 void inicio() {
 	int n = 5;
 	String resultado = n + "! = " + factorial(n);
-	print(resultado);
+	println(resultado);
 	n --;
 	resultado = n + "! = " + factorial(n);
-	print(resultado);
+	println(resultado);
 	n += 2;
 	resultado = n + "! = " + factorial(n);
-	print(resultado);
+	println(resultado);
 	n = n - 3;
 	resultado = n + "! = " + factorial(n);
-	print(resultado);
+	println(resultado);
 }
 
 int factorial(int n) {

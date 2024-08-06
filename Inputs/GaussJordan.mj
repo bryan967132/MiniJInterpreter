@@ -1,0 +1,104 @@
+main init();
+
+void init() {
+	double[[]] coefficients = [
+    	[1, 1, 1, 2 ],
+	    [6,-4, 5, 31],
+    	[5, 2, 2, 13]
+	];
+
+	String[] literals = ["x", "y", "z"];
+	solveSystem(coefficients, literals);
+}
+
+void solveSystem(double[[]] aum, String[] lit) {
+	printEqu(aum, lit);
+	printAum(aum);
+	printSolution(solve(aum, lit), lit);
+}
+
+double[[]] solve(double[[]] aum, String[] lit) {
+	double multiple, k;
+	for(int i = 0; i < aum.size; i ++) {
+		k = aum[i][i];
+		if(k != 1) {
+			// Hacer 1 el pivote diviendo toda la fila por el valor original del pivote
+			for(int j = i; j <  aum[i].size; j ++) {
+				aum[i][j] /= k;
+			}
+			printAumStep(aum, i, k);
+		}
+		// Operaciones entre filas
+		for(int x = 0; x < aum.size; x ++) {
+			if(x == i) {continue;}
+			multiple = aum[x][i];
+			if(multiple != 0) {
+				for(int y = i; y < aum[i].size; y ++) {
+					aum[x][y] -= aum[i][y] * multiple;
+				}
+				printAumentedPiv(aum, i, x, multiple);
+			}
+		}
+	}
+	return aum;
+}
+
+void printSolution(double[[]] aum, String[] lit) {
+    String result = "Solución del Sistema";
+    for(int i = 0; i < aum.size; i ++) {
+        result += "\n" + lit[i] + " = " + round(aum[i][aum.size], 3);
+    }
+    println(result);
+}
+
+void printEqu(double[[]] aum, String[] lit) {
+	println("Sistema de Ecuaciones");
+	String system;
+	for(int i = 0; i < aum.size; i ++) {
+		for(int j = 0; j < aum.size; j ++) {
+			if(aum[i][j] < 0 && j == 0) {system += "- ";}
+			system += abs(round(aum[i][j], 3)) + lit[j];
+			if(j < aum[i].size - 2) {
+                system = aum[i][j + 1] >= 0 ? system + " + " : system + " - ";
+			}
+		}
+		system += " = " + round(aum[i][aum[i].size - 1],3) + '\n';
+	}
+	println(system);
+}
+
+void printAum(double[[]] aum) {
+	println("Matriz Aumentada");
+	printAumM(aum);
+}
+
+void printAumStep(double[[]] aum, int i, double factor) {
+	println("Operación: F" + (i + 1) + " = F" + (i + 1) + " / " + round(factor, 3));
+	printAumM(aum);
+}
+
+void printAumentedPiv(double[[]] aum, int i, int x1, double multiple) {
+    String sign = multiple < 0 ? " + " : " - ";
+    String multi = abs(multiple) == 1 ? "" : abs(multiple) + " * ";
+    println("Operación: F" + (x1 + 1) + " = F" + (x1 + 1) + sign + multi + "F" + (i + 1));
+    printAumM(aum);
+}
+
+void printAumM(double[[]] aum) {
+	for(int x = 0; x < aum.size; x ++) {
+		for(int j = 0; j < aum[x].size; j ++) {
+			print(lineF(j >= aum[x].size - 2 ? 6 : 8, String(round(aum[x][j], 3))));
+			if(j == aum[x].size - 2) {print(lineF(3, "|"));}
+		}
+		println();
+	}
+	println();
+}
+
+String lineF(int sp, String v) {
+    String str = v;
+    for(int i = 0; i <= sp - v.size; i ++) {
+        str += " ";
+    }
+    return str;
+}

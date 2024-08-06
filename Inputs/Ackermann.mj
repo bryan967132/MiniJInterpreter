@@ -12,8 +12,8 @@ main mainP();
 
 void mainP() {
 	int m = 3, n = 4;
-	print("ackermann(m: " + m + ", n: " + n + ") = " + ackermann(m, n));
+	println("ackermann(m: " + m + ", n: " + n + ") = " + ackermann(m, n));
 	m = 2;
 	n = 5;
-	print("ackermann(m: " + m + ", n: " + n + ") = " + ackermann(m, n));
+	println("ackermann(m: " + m + ", n: " + n + ") = " + ackermann(m, n));
 }

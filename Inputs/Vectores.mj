@@ -1,0 +1,32 @@
+main init();
+
+void init() {
+	double[[[]]] coefficients = [
+		[
+	    	[1, 1, 1, 2 ],
+		    [6,-4, 5, 31],
+    		[5, 2, 2, 13]
+		],
+		[
+	    	[1, 1, 1, 2 ],
+		    [6,-4, 5, 31],
+    		[5, 2, 2, 13]
+		]
+	];
+	println(String(coefficients));
+	println("coefficients.size = " + coefficients.size);
+	coefficients[1][1][1] ++;
+	coefficients[1][2][3] --;
+	for(int i = 0; i < coefficients.size; i ++) {
+		for(int j = 0; j < coefficients[i].size; j ++) {
+			for(int k = 0; k < coefficients[i][j].size; k ++) {
+				if(i == 0 && coefficients[i][j][k] % 2 == 0) {
+					coefficients[i][j][k] = coefficients[i][j][k] - 10;
+				}
+				print(coefficients[i][j][k] + " ");
+			}
+			println();
+		}
+		println();
+	}
+}
