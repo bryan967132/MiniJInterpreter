@@ -52,71 +52,91 @@ public interface ParserConstants {
   /** RegularExpression Id. */
   int RW_false = 20;
   /** RegularExpression Id. */
-  int RW_print = 21;
+  int RW_println = 21;
   /** RegularExpression Id. */
-  int TK_char = 22;
+  int RW_print = 22;
   /** RegularExpression Id. */
-  int TK_string = 23;
+  int RW_round = 23;
   /** RegularExpression Id. */
-  int TK_int = 24;
+  int RW_size = 24;
   /** RegularExpression Id. */
-  int TK_double = 25;
+  int RW_abs = 25;
   /** RegularExpression Id. */
-  int TK_id = 26;
+  int TK_char = 26;
   /** RegularExpression Id. */
-  int TK_inc = 27;
+  int TK_string = 27;
   /** RegularExpression Id. */
-  int TK_dec = 28;
+  int TK_int = 28;
   /** RegularExpression Id. */
-  int TK_add = 29;
+  int TK_double = 29;
   /** RegularExpression Id. */
-  int TK_sub = 30;
+  int TK_id = 30;
   /** RegularExpression Id. */
-  int TK_plus = 31;
+  int TK_inc = 31;
   /** RegularExpression Id. */
-  int TK_minus = 32;
+  int TK_dec = 32;
   /** RegularExpression Id. */
-  int TK_mult = 33;
+  int TK_plusc = 33;
   /** RegularExpression Id. */
-  int TK_div = 34;
+  int TK_minusc = 34;
   /** RegularExpression Id. */
-  int TK_mod = 35;
+  int TK_multc = 35;
   /** RegularExpression Id. */
-  int TK_equequ = 36;
+  int TK_divc = 36;
   /** RegularExpression Id. */
-  int TK_notequ = 37;
+  int TK_modc = 37;
   /** RegularExpression Id. */
-  int TK_lessequ = 38;
+  int TK_plus = 38;
   /** RegularExpression Id. */
-  int TK_moreequ = 39;
+  int TK_minus = 39;
   /** RegularExpression Id. */
-  int TK_equ = 40;
+  int TK_mult = 40;
   /** RegularExpression Id. */
-  int TK_less = 41;
+  int TK_div = 41;
   /** RegularExpression Id. */
-  int TK_more = 42;
+  int TK_mod = 42;
   /** RegularExpression Id. */
-  int TK_and = 43;
+  int TK_equequ = 43;
   /** RegularExpression Id. */
-  int TK_or = 44;
+  int TK_notequ = 44;
   /** RegularExpression Id. */
-  int TK_not = 45;
+  int TK_lessequ = 45;
   /** RegularExpression Id. */
-  int TK_lpar = 46;
+  int TK_moreequ = 46;
   /** RegularExpression Id. */
-  int TK_rpar = 47;
+  int TK_equ = 47;
   /** RegularExpression Id. */
-  int TK_lbrc = 48;
+  int TK_less = 48;
   /** RegularExpression Id. */
-  int TK_rbrc = 49;
+  int TK_more = 49;
   /** RegularExpression Id. */
-  int TK_comma = 50;
+  int TK_and = 50;
   /** RegularExpression Id. */
-  int TK_colon = 51;
+  int TK_or = 51;
   /** RegularExpression Id. */
-  int TK_semicolon = 52;
+  int TK_not = 52;
   /** RegularExpression Id. */
-  int TK_question = 53;
+  int TK_lpar = 53;
+  /** RegularExpression Id. */
+  int TK_rpar = 54;
+  /** RegularExpression Id. */
+  int TK_lbrc = 55;
+  /** RegularExpression Id. */
+  int TK_rbrc = 56;
+  /** RegularExpression Id. */
+  int TK_lbrk = 57;
+  /** RegularExpression Id. */
+  int TK_rbrk = 58;
+  /** RegularExpression Id. */
+  int TK_dot = 59;
+  /** RegularExpression Id. */
+  int TK_comma = 60;
+  /** RegularExpression Id. */
+  int TK_colon = 61;
+  /** RegularExpression Id. */
+  int TK_semicolon = 62;
+  /** RegularExpression Id. */
+  int TK_question = 63;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -144,7 +164,11 @@ public interface ParserConstants {
     "\"return\"",
     "\"true\"",
     "\"false\"",
+    "\"println\"",
     "\"print\"",
+    "\"round\"",
+    "\"size\"",
+    "\"abs\"",
     "<TK_char>",
     "<TK_string>",
     "<TK_int>",
@@ -154,6 +178,9 @@ public interface ParserConstants {
     "\"--\"",
     "\"+=\"",
     "\"-=\"",
+    "\"*=\"",
+    "\"/=\"",
+    "\"%=\"",
     "\"+\"",
     "\"-\"",
     "\"*\"",
@@ -173,6 +200,9 @@ public interface ParserConstants {
     "\")\"",
     "\"{\"",
     "\"}\"",
+    "\"[\"",
+    "\"]\"",
+    "\".\"",
     "\",\"",
     "\":\"",
     "\";\"",
@@ -181,9 +211,9 @@ public interface ParserConstants {
     "\" \"",
     "\"\\r\"",
     "\"\\t\"",
-    "<token of kind 58>",
-    "<token of kind 59>",
-    "<token of kind 60>",
+    "<token of kind 68>",
+    "<token of kind 69>",
+    "<token of kind 70>",
   };
 
 }

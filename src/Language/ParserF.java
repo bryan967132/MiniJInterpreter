@@ -55,7 +55,6 @@ Token t = e.currentToken;
 
 /* INSTGLOBAL ::=
     CALLMAINFUNC |
-    DECLID       |
     DECLFUNC     
 */
   final public void INSTGLOBAL() throws ParseException {
@@ -64,16 +63,19 @@ Token t = e.currentToken;
       CALLMAINFUNC();
       break;
       }
+    case RW_void:
+    case RW_String:
+    case RW_boolean:
+    case RW_char:
+    case RW_int:
+    case RW_double:{
+      DECLFUNC();
+      break;
+      }
     default:
       jj_la1[1] = jj_gen;
-      if (jj_2_1(3)) {
-        DECLID();
-      } else if (jj_2_2(3)) {
-        DECLFUNC();
-      } else {
-        jj_consume_token(-1);
-        throw new ParseException();
-      }
+      jj_consume_token(-1);
+      throw new ParseException();
     }
 }
 
@@ -94,25 +96,69 @@ painter.USEFNC(id.beginColumn, id.image.length());
     COLORRPAR();
 }
 
-// LISTARGS ::= (EXP (',' EXP)*)?
-  final public void LISTARGS() throws ParseException {
+/* DECLFUNC ::=
+    DATATYPE (TK_id '(' LISTPARAMS ')' ENV | INITIDS ';') |
+    'void'   TK_id '(' LISTPARAMS ')' ENV                 
+*/
+  final public void DECLFUNC() throws ParseException {Token i;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case RW_String:
     case RW_boolean:
     case RW_char:
     case RW_int:
-    case RW_double:
-    case RW_true:
-    case RW_false:
-    case TK_char:
-    case TK_string:
-    case TK_int:
-    case TK_double:
-    case TK_id:
-    case TK_minus:
-    case TK_not:
-    case TK_lpar:{
-      EXP();
+    case RW_double:{
+      DATATYPE();
+      if (jj_2_1(2)) {
+        i = jj_consume_token(TK_id);
+painter.FNC(i.beginColumn, i.image.length());
+        COLORLPAR();
+        LISTPARAMS();
+        COLORRPAR();
+        ENV();
+      } else {
+        switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+        case TK_id:{
+          INITIDS();
+          jj_consume_token(TK_semicolon);
+          break;
+          }
+        default:
+          jj_la1[2] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+      }
+      break;
+      }
+    case RW_void:{
+      i = jj_consume_token(RW_void);
+painter.RW1(i.beginColumn, i.image.length());
+      i = jj_consume_token(TK_id);
+painter.FNC(i.beginColumn, i.image.length());
+      COLORLPAR();
+      LISTPARAMS();
+      COLORRPAR();
+      ENV();
+      break;
+      }
+    default:
+      jj_la1[3] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+}
+
+// LISTPARAMS ::= (DATATYPE TK_id (',' DATATYPE TK_id)*)?
+  final public void LISTPARAMS() throws ParseException {Token id;
+    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+    case RW_String:
+    case RW_boolean:
+    case RW_char:
+    case RW_int:
+    case RW_double:{
+      DATATYPE();
+      id = jj_consume_token(TK_id);
+painter.VARIABLE(id.beginColumn, id.image.length());
       label_2:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -121,23 +167,25 @@ painter.USEFNC(id.beginColumn, id.image.length());
           break;
           }
         default:
-          jj_la1[2] = jj_gen;
+          jj_la1[4] = jj_gen;
           break label_2;
         }
         jj_consume_token(TK_comma);
-        EXP();
+        DATATYPE();
+        id = jj_consume_token(TK_id);
+painter.VARIABLE(id.beginColumn, id.image.length());
       }
       break;
       }
     default:
-      jj_la1[3] = jj_gen;
+      jj_la1[5] = jj_gen;
       ;
     }
 }
 
-// DECLID ::= TYPE INITIDS ';'
-  final public void DECLID() throws ParseException {
-    TYPE();
+// INITVAR ::= DATATYPE INITIDS ';'
+  final public void INITVAR() throws ParseException {
+    DATATYPE();
     INITIDS();
     jj_consume_token(TK_semicolon);
 }
@@ -153,7 +201,7 @@ painter.VARIABLE(id.beginColumn, id.image.length());
       break;
       }
     default:
-      jj_la1[4] = jj_gen;
+      jj_la1[6] = jj_gen;
       ;
     }
     label_3:
@@ -164,7 +212,7 @@ painter.VARIABLE(id.beginColumn, id.image.length());
         break;
         }
       default:
-        jj_la1[5] = jj_gen;
+        jj_la1[7] = jj_gen;
         break label_3;
       }
       jj_consume_token(TK_comma);
@@ -177,87 +225,14 @@ painter.VARIABLE(id.beginColumn, id.image.length());
         break;
         }
       default:
-        jj_la1[6] = jj_gen;
+        jj_la1[8] = jj_gen;
         ;
       }
     }
 }
 
-/* DECLFUNC ::=
-    TYPE   TK_id '(' LISTPARAMS ')' ENV |
-    'void' TK_id '(' LISTPARAMS ')' ENV
-*/
-  final public void DECLFUNC() throws ParseException {Token i;
-    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case RW_String:
-    case RW_boolean:
-    case RW_char:
-    case RW_int:
-    case RW_double:{
-      TYPE();
-      i = jj_consume_token(TK_id);
-painter.FNC(i.beginColumn, i.image.length());
-      COLORLPAR();
-      LISTPARAMS();
-      COLORRPAR();
-      ENV();
-      break;
-      }
-    case RW_void:{
-      i = jj_consume_token(RW_void);
-painter.RW1(i.beginColumn, i.image.length());
-      i = jj_consume_token(TK_id);
-painter.FNC(i.beginColumn, i.image.length());
-      COLORLPAR();
-      LISTPARAMS();
-      COLORRPAR();
-      ENV();
-      break;
-      }
-    default:
-      jj_la1[7] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-}
-
-// LISTPARAMS ::= (TYPE TK_id (',' TYPE TK_id)*)?
-  final public void LISTPARAMS() throws ParseException {Token id;
-    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case RW_String:
-    case RW_boolean:
-    case RW_char:
-    case RW_int:
-    case RW_double:{
-      TYPE();
-      id = jj_consume_token(TK_id);
-painter.VARIABLE(id.beginColumn, id.image.length());
-      label_4:
-      while (true) {
-        switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-        case TK_comma:{
-          ;
-          break;
-          }
-        default:
-          jj_la1[8] = jj_gen;
-          break label_4;
-        }
-        jj_consume_token(TK_comma);
-        TYPE();
-        id = jj_consume_token(TK_id);
-painter.VARIABLE(id.beginColumn, id.image.length());
-      }
-      break;
-      }
-    default:
-      jj_la1[9] = jj_gen;
-      ;
-    }
-}
-
-// IFSTRUCT ::= 'if' '(' EXP ')' ENV ('else' (IFSTRUCT | ENV))?
-  final public void IFSTRUCT() throws ParseException {Token i;
+// IF ::= 'if' '(' EXP ')' ENV ('else' (IF | ENV))?
+  final public void IF() throws ParseException {Token i;
     i = jj_consume_token(RW_if);
 painter.RW2(i.beginColumn, i.image.length());
     COLORLPAR();
@@ -270,7 +245,7 @@ painter.RW2(i.beginColumn, i.image.length());
 painter.RW2(i.beginColumn, i.image.length());
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case RW_if:{
-        IFSTRUCT();
+        IF();
         break;
         }
       case TK_lbrc:{
@@ -278,20 +253,20 @@ painter.RW2(i.beginColumn, i.image.length());
         break;
         }
       default:
-        jj_la1[10] = jj_gen;
+        jj_la1[9] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
       }
     default:
-      jj_la1[11] = jj_gen;
+      jj_la1[10] = jj_gen;
       ;
     }
 }
 
-// SWITCHSTRUCT ::= 'switch' '(' EXP ')' ENVS
-  final public void SWITCHSTRUCT() throws ParseException {Token sw;
+// SWITCH ::= 'switch' '(' EXP ')' ENVS
+  final public void SWITCH() throws ParseException {Token sw;
     sw = jj_consume_token(RW_switch);
 painter.RW2(sw.beginColumn, sw.image.length());
     COLORLPAR();
@@ -315,7 +290,7 @@ painter.RW2(sw.beginColumn, sw.image.length());
       break;
       }
     default:
-      jj_la1[12] = jj_gen;
+      jj_la1[11] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -324,14 +299,14 @@ painter.RW2(sw.beginColumn, sw.image.length());
       break;
       }
     default:
-      jj_la1[13] = jj_gen;
+      jj_la1[12] = jj_gen;
       ;
     }
 }
 
 // CASES ::= (CASE)+
   final public void CASES() throws ParseException {
-    label_5:
+    label_4:
     while (true) {
       CASE();
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -340,8 +315,8 @@ painter.RW2(sw.beginColumn, sw.image.length());
         break;
         }
       default:
-        jj_la1[14] = jj_gen;
-        break label_5;
+        jj_la1[13] = jj_gen;
+        break label_4;
       }
     }
 }
@@ -359,7 +334,7 @@ painter.SYMBS1(c.beginColumn, c.image.length());
       break;
       }
     default:
-      jj_la1[15] = jj_gen;
+      jj_la1[14] = jj_gen;
       INSTRUCTIONS();
     }
 }
@@ -376,13 +351,13 @@ painter.SYMBS1(d.beginColumn, d.image.length());
       break;
       }
     default:
-      jj_la1[16] = jj_gen;
+      jj_la1[15] = jj_gen;
       INSTRUCTIONS();
     }
 }
 
-// LOOPFOR ::= 'for' '(' ARGSFOR ')' ENV
-  final public void LOOPFOR() throws ParseException {Token f;
+// FOR ::= 'for' '(' ARGSFOR ')' ENV
+  final public void FOR() throws ParseException {Token f;
     f = jj_consume_token(RW_for);
 painter.RW2(f.beginColumn, f.image.length());
     COLORLPAR();
@@ -404,7 +379,7 @@ painter.RW2(f.beginColumn, f.image.length());
       break;
       }
     default:
-      jj_la1[17] = jj_gen;
+      jj_la1[16] = jj_gen;
       ;
     }
     jj_consume_token(TK_semicolon);
@@ -416,6 +391,8 @@ painter.RW2(f.beginColumn, f.image.length());
     case RW_double:
     case RW_true:
     case RW_false:
+    case RW_round:
+    case RW_abs:
     case TK_char:
     case TK_string:
     case TK_int:
@@ -423,12 +400,13 @@ painter.RW2(f.beginColumn, f.image.length());
     case TK_id:
     case TK_minus:
     case TK_not:
-    case TK_lpar:{
+    case TK_lpar:
+    case TK_lbrk:{
       EXP();
       break;
       }
     default:
-      jj_la1[18] = jj_gen;
+      jj_la1[17] = jj_gen;
       ;
     }
     jj_consume_token(TK_semicolon);
@@ -438,14 +416,14 @@ painter.RW2(f.beginColumn, f.image.length());
       break;
       }
     default:
-      jj_la1[19] = jj_gen;
+      jj_la1[18] = jj_gen;
       ;
     }
 }
 
 /* INITIALIZEFOR ::=
-    TYPE INITIDSFOR |
-    REASIGNS        
+    DATATYPE INITIDSFOR |
+    REASIGNS            
 */
   final public void INITIALIZEFOR() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -454,7 +432,7 @@ painter.RW2(f.beginColumn, f.image.length());
     case RW_char:
     case RW_int:
     case RW_double:{
-      TYPE();
+      DATATYPE();
       REASIGNS();
       break;
       }
@@ -463,15 +441,38 @@ painter.RW2(f.beginColumn, f.image.length());
       break;
       }
     default:
-      jj_la1[20] = jj_gen;
+      jj_la1[19] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
 }
 
-// REASIGNS ::= REASIGN (',' REASIGN)*
+// REASIGNS ::= ASSIGN (',' ASSIGN)*
   final public void REASIGNS() throws ParseException {
-    REASIGN();
+    IDPOS();
+    jj_consume_token(TK_equ);
+    EXP();
+    label_5:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case TK_comma:{
+        ;
+        break;
+        }
+      default:
+        jj_la1[20] = jj_gen;
+        break label_5;
+      }
+      jj_consume_token(TK_comma);
+      IDPOS();
+      jj_consume_token(TK_equ);
+      EXP();
+    }
+}
+
+// UPDATESFOR ::= ASSIGN (',' ASSIGN)*
+  final public void UPDATESFOR() throws ParseException {
+    ASSIGN();
     label_6:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -484,49 +485,12 @@ painter.RW2(f.beginColumn, f.image.length());
         break label_6;
       }
       jj_consume_token(TK_comma);
-      REASIGN();
+      ASSIGN();
     }
 }
 
-// UPDATESFOR ::= UPDATEFOR (',' UPDATEFOR)*
-  final public void UPDATESFOR() throws ParseException {
-    UPDATEFOR();
-    label_7:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case TK_comma:{
-        ;
-        break;
-        }
-      default:
-        jj_la1[22] = jj_gen;
-        break label_7;
-      }
-      jj_consume_token(TK_comma);
-      UPDATEFOR();
-    }
-}
-
-/* UPDATEFOR ::=
-    INCDEC  |
-    REASIGN |
-    ADDSUB  
-*/
-  final public void UPDATEFOR() throws ParseException {
-    if (jj_2_3(2)) {
-      INCDEC();
-    } else if (jj_2_4(2)) {
-      REASIGN();
-    } else if (jj_2_5(2)) {
-      ADDSUB();
-    } else {
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-}
-
-// LOOPWHILE ::= 'while' '(' EXP ')' ENV
-  final public void LOOPWHILE() throws ParseException {Token w;
+// WHILE ::= 'while' '(' EXP ')' ENV
+  final public void WHILE() throws ParseException {Token w;
     w = jj_consume_token(RW_while);
 painter.RW2(w.beginColumn, w.image.length());
     COLORLPAR();
@@ -535,8 +499,8 @@ painter.RW2(w.beginColumn, w.image.length());
     ENV();
 }
 
-// LOOPDOWHILE ::= 'do' ENV 'while' '(' EXP ')' ';'
-  final public void LOOPDOWHILE() throws ParseException {Token w;
+// DOWHILE ::= 'do' ENV 'while' '(' EXP ')' ';'
+  final public void DOWHILE() throws ParseException {Token w;
     w = jj_consume_token(RW_do);
 painter.RW2(w.beginColumn, w.image.length());
     ENV();
@@ -548,45 +512,65 @@ painter.RW2(w.beginColumn, w.image.length());
     jj_consume_token(TK_semicolon);
 }
 
-// REASIGN ::= TK_id '=' EXP
-  final public void REASIGN() throws ParseException {Token id;
-    id = jj_consume_token(TK_id);
-painter.USEVARIABLE(id.beginColumn, id.image.length());
-    jj_consume_token(TK_equ);
-    EXP();
-}
-
-// INCDEC ::= TK_id ('++' | '--')
-  final public void INCDEC() throws ParseException {Token id;
-    id = jj_consume_token(TK_id);
-painter.USEVARIABLE(id.beginColumn, id.image.length());
+// ASSIGN ::= TK_id (('=' | '+=' | '-=' | '*=' | '/=' | '%=') EXP | ('++' | '--'))
+  final public void ASSIGN() throws ParseException {
+    IDPOS();
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case TK_inc:{
-      jj_consume_token(TK_inc);
+    case TK_plusc:
+    case TK_minusc:
+    case TK_multc:
+    case TK_divc:
+    case TK_modc:
+    case TK_equ:{
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case TK_equ:{
+        jj_consume_token(TK_equ);
+        break;
+        }
+      case TK_plusc:{
+        jj_consume_token(TK_plusc);
+        break;
+        }
+      case TK_minusc:{
+        jj_consume_token(TK_minusc);
+        break;
+        }
+      case TK_multc:{
+        jj_consume_token(TK_multc);
+        break;
+        }
+      case TK_divc:{
+        jj_consume_token(TK_divc);
+        break;
+        }
+      case TK_modc:{
+        jj_consume_token(TK_modc);
+        break;
+        }
+      default:
+        jj_la1[22] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
+      }
+      EXP();
       break;
       }
+    case TK_inc:
     case TK_dec:{
-      jj_consume_token(TK_dec);
-      break;
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case TK_inc:{
+        jj_consume_token(TK_inc);
+        break;
+        }
+      case TK_dec:{
+        jj_consume_token(TK_dec);
+        break;
+        }
+      default:
+        jj_la1[23] = jj_gen;
+        jj_consume_token(-1);
+        throw new ParseException();
       }
-    default:
-      jj_la1[23] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-}
-
-// ADDSUB ::= TK_id ('+=' | '-=') EXP
-  final public void ADDSUB() throws ParseException {Token id;
-    id = jj_consume_token(TK_id);
-painter.USEVARIABLE(id.beginColumn, id.image.length());
-    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case TK_add:{
-      jj_consume_token(TK_add);
-      break;
-      }
-    case TK_sub:{
-      jj_consume_token(TK_sub);
       break;
       }
     default:
@@ -594,47 +578,74 @@ painter.USEVARIABLE(id.beginColumn, id.image.length());
       jj_consume_token(-1);
       throw new ParseException();
     }
-    EXP();
 }
 
-// CAST ::= TYPE TK_lpar EXP TK_rpar
-  final public void CAST() throws ParseException {
-    TYPE();
-    COLORLPAR();
-    EXP();
-    COLORRPAR();
-}
-
-// PRINT ::= 'PRINT' '(' EXP? ')' ';'
-  final public void PRINT() throws ParseException {Token p;
-    p = jj_consume_token(RW_print);
-painter.USEFNC(p.beginColumn, p.image.length());
-    COLORLPAR();
+// IDPOS ::= TK_id VECTORPOS?
+  final public void IDPOS() throws ParseException {Token id;
+    id = jj_consume_token(TK_id);
+painter.USEVARIABLE(id.beginColumn, id.image.length());
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case RW_String:
-    case RW_boolean:
-    case RW_char:
-    case RW_int:
-    case RW_double:
-    case RW_true:
-    case RW_false:
-    case TK_char:
-    case TK_string:
-    case TK_int:
-    case TK_double:
-    case TK_id:
-    case TK_minus:
-    case TK_not:
-    case TK_lpar:{
-      EXP();
+    case TK_lbrk:{
+      VECTORPOS();
       break;
       }
     default:
       jj_la1[25] = jj_gen;
       ;
     }
-    COLORRPAR();
-    jj_consume_token(TK_semicolon);
+}
+
+// PRINT ::= 'PRINT' '(' EXP? ')' ';'
+  final public void PRINT() throws ParseException {Token p;
+    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+    case RW_println:{
+      p = jj_consume_token(RW_println);
+painter.USEFNC(p.beginColumn, p.image.length());
+      COLORLPAR();
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case RW_String:
+      case RW_boolean:
+      case RW_char:
+      case RW_int:
+      case RW_double:
+      case RW_true:
+      case RW_false:
+      case RW_round:
+      case RW_abs:
+      case TK_char:
+      case TK_string:
+      case TK_int:
+      case TK_double:
+      case TK_id:
+      case TK_minus:
+      case TK_not:
+      case TK_lpar:
+      case TK_lbrk:{
+        EXP();
+        break;
+        }
+      default:
+        jj_la1[26] = jj_gen;
+        ;
+      }
+      COLORRPAR();
+      jj_consume_token(TK_semicolon);
+      break;
+      }
+    case RW_print:{
+      p = jj_consume_token(RW_print);
+painter.USEFNC(p.beginColumn, p.image.length());
+      COLORLPAR();
+      EXP();
+      COLORRPAR();
+      jj_consume_token(TK_semicolon);
+      break;
+      }
+    default:
+      jj_la1[27] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
 }
 
 // ENV ::= '{' INSTRUCTIONS '}'
@@ -646,7 +657,7 @@ painter.USEFNC(p.beginColumn, p.image.length());
 
 // INSTRUCTIONS ::= INSTRUCTION*
   final public void INSTRUCTIONS() throws ParseException {
-    label_8:
+    label_7:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case RW_String:
@@ -662,14 +673,15 @@ painter.USEFNC(p.beginColumn, p.image.length());
       case RW_break:
       case RW_continue:
       case RW_return:
+      case RW_println:
       case RW_print:
       case TK_id:{
         ;
         break;
         }
       default:
-        jj_la1[26] = jj_gen;
-        break label_8;
+        jj_la1[28] = jj_gen;
+        break label_7;
       }
       try {
         INSTRUCTION();
@@ -684,17 +696,18 @@ Token t = e.currentToken;
 }
 
 /* INSTRUCTION ::=
-    DECLID       |
-    IFSTRUCT     |
-    SWITCHSTRUCT |
-    LOOPFOR      |
-    LOOPWHILE    |
-    LOOPDOWHILE  |
-    REASIGN      |
-    ADDSUB       |
-    INCDEC       |
-    CALLFUNC ';' |
-    PRINT        
+    INITVAR       |
+    IF            |
+    SWITCH        |
+    FOR           |
+    WHILE         |
+    DOWHILE       |
+    ASSIGN        |
+    CALLFUNC ';'  |
+    PRINT         |
+    'return' EXP? |
+    'continue'    |
+    'break'       
 */
   final public void INSTRUCTION() throws ParseException {Token t;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -703,39 +716,33 @@ Token t = e.currentToken;
     case RW_char:
     case RW_int:
     case RW_double:{
-      DECLID();
+      INITVAR();
       break;
       }
     case RW_if:{
-      IFSTRUCT();
+      IF();
       break;
       }
     case RW_switch:{
-      SWITCHSTRUCT();
+      SWITCH();
       break;
       }
     case RW_for:{
-      LOOPFOR();
+      FOR();
       break;
       }
     case RW_while:{
-      LOOPWHILE();
+      WHILE();
       break;
       }
     case RW_do:{
-      LOOPDOWHILE();
+      DOWHILE();
       break;
       }
     default:
-      jj_la1[28] = jj_gen;
-      if (jj_2_6(2)) {
-        REASIGN();
-        jj_consume_token(TK_semicolon);
-      } else if (jj_2_7(2)) {
-        ADDSUB();
-        jj_consume_token(TK_semicolon);
-      } else if (jj_2_8(2)) {
-        INCDEC();
+      jj_la1[30] = jj_gen;
+      if (jj_2_2(2)) {
+        ASSIGN();
         jj_consume_token(TK_semicolon);
       } else {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -744,6 +751,7 @@ Token t = e.currentToken;
           jj_consume_token(TK_semicolon);
           break;
           }
+        case RW_println:
         case RW_print:{
           PRINT();
           break;
@@ -759,6 +767,8 @@ painter.RW2(t.beginColumn, t.image.length());
           case RW_double:
           case RW_true:
           case RW_false:
+          case RW_round:
+          case RW_abs:
           case TK_char:
           case TK_string:
           case TK_int:
@@ -766,12 +776,13 @@ painter.RW2(t.beginColumn, t.image.length());
           case TK_id:
           case TK_minus:
           case TK_not:
-          case TK_lpar:{
+          case TK_lpar:
+          case TK_lbrk:{
             EXP();
             break;
             }
           default:
-            jj_la1[27] = jj_gen;
+            jj_la1[29] = jj_gen;
             ;
           }
           jj_consume_token(TK_semicolon);
@@ -790,12 +801,56 @@ painter.RW2(t.beginColumn, t.image.length());
           break;
           }
         default:
-          jj_la1[29] = jj_gen;
+          jj_la1[31] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
       }
     }
+}
+
+// DATATYPE ::= TYPE VECTORTYPE?
+  final public void DATATYPE() throws ParseException {
+    TYPE();
+    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+    case TK_lbrk:{
+      VECTORTYPE();
+      break;
+      }
+    default:
+      jj_la1[32] = jj_gen;
+      ;
+    }
+}
+
+// VECTORTYPE ::= '[' VECTORTYPE2? ']'
+  final public void VECTORTYPE() throws ParseException {
+    COLORLBRK();
+    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+    case TK_lbrk:{
+      VECTORTYPE2();
+      break;
+      }
+    default:
+      jj_la1[33] = jj_gen;
+      ;
+    }
+    COLORRBRK();
+}
+
+// VECTORTYPE2 ::= '[' VECTORTYPE? ']'
+  final public void VECTORTYPE2() throws ParseException {
+    COLORLBRK();
+    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+    case TK_lbrk:{
+      VECTORTYPE();
+      break;
+      }
+    default:
+      jj_la1[34] = jj_gen;
+      ;
+    }
+    COLORRBRK();
 }
 
 /* TYPE ::=
@@ -833,7 +888,7 @@ painter.RW1(tp.beginColumn, tp.image.length());
       break;
       }
     default:
-      jj_la1[30] = jj_gen;
+      jj_la1[35] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -853,7 +908,7 @@ painter.SYMBS1(t.beginColumn, t.image.length());
       break;
       }
     default:
-      jj_la1[31] = jj_gen;
+      jj_la1[36] = jj_gen;
       ;
     }
 }
@@ -861,7 +916,7 @@ painter.SYMBS1(t.beginColumn, t.image.length());
 // opOr ::= opAnd ('||' opAnd)*
   final public void opOr() throws ParseException {
     opAnd();
-    label_9:
+    label_8:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TK_or:{
@@ -869,8 +924,8 @@ painter.SYMBS1(t.beginColumn, t.image.length());
         break;
         }
       default:
-        jj_la1[32] = jj_gen;
-        break label_9;
+        jj_la1[37] = jj_gen;
+        break label_8;
       }
       jj_consume_token(TK_or);
       opAnd();
@@ -880,7 +935,7 @@ painter.SYMBS1(t.beginColumn, t.image.length());
 // opAnd ::= opEqu ('&&' opEqu)*
   final public void opAnd() throws ParseException {
     opEqu();
-    label_10:
+    label_9:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TK_and:{
@@ -888,21 +943,18 @@ painter.SYMBS1(t.beginColumn, t.image.length());
         break;
         }
       default:
-        jj_la1[33] = jj_gen;
-        break label_10;
+        jj_la1[38] = jj_gen;
+        break label_9;
       }
       jj_consume_token(TK_and);
       opEqu();
     }
 }
 
-/*opEqu ::=
-    opCmp ('==' opCmp)* |
-    opCmp ('!=' opCmp)* 
-*/
+// opEqu ::= opCmp (('==' | '!=') opCmp)*
   final public void opEqu() throws ParseException {
     opCmp();
-    label_11:
+    label_10:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TK_equequ:
@@ -911,37 +963,31 @@ painter.SYMBS1(t.beginColumn, t.image.length());
         break;
         }
       default:
-        jj_la1[34] = jj_gen;
-        break label_11;
+        jj_la1[39] = jj_gen;
+        break label_10;
       }
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TK_equequ:{
         jj_consume_token(TK_equequ);
-        opCmp();
         break;
         }
       case TK_notequ:{
         jj_consume_token(TK_notequ);
-        opCmp();
         break;
         }
       default:
-        jj_la1[35] = jj_gen;
+        jj_la1[40] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
+      opCmp();
     }
 }
 
-/* opCmp ::=
-    opAdd ('<=' opAdd)* |
-    opAdd ('>=' opAdd)* |
-    opAdd ('<' opAdd)*  |
-    opAdd ('>' opAdd)*  
-*/
+// opCmp ::= opAdd (('<=' | '>=' |'<' | '>') opAdd)*
   final public void opCmp() throws ParseException {
     opAdd();
-    label_12:
+    label_11:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TK_lessequ:
@@ -952,45 +998,39 @@ painter.SYMBS1(t.beginColumn, t.image.length());
         break;
         }
       default:
-        jj_la1[36] = jj_gen;
-        break label_12;
+        jj_la1[41] = jj_gen;
+        break label_11;
       }
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TK_lessequ:{
         jj_consume_token(TK_lessequ);
-        opAdd();
         break;
         }
       case TK_moreequ:{
         jj_consume_token(TK_moreequ);
-        opAdd();
         break;
         }
       case TK_less:{
         jj_consume_token(TK_less);
-        opAdd();
         break;
         }
       case TK_more:{
         jj_consume_token(TK_more);
-        opAdd();
         break;
         }
       default:
-        jj_la1[37] = jj_gen;
+        jj_la1[42] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
+      opAdd();
     }
 }
 
-/* opAdd ::=
-    opMult ('+' opMult)* |
-    opMult ('-' opMult)* 
-*/
+// opAdd ::= opMult (('+' | '-') opMult)*
   final public void opAdd() throws ParseException {
     opMult();
-    label_13:
+    label_12:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TK_plus:
@@ -999,35 +1039,31 @@ painter.SYMBS1(t.beginColumn, t.image.length());
         break;
         }
       default:
-        jj_la1[38] = jj_gen;
-        break label_13;
+        jj_la1[43] = jj_gen;
+        break label_12;
       }
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TK_plus:{
         jj_consume_token(TK_plus);
-        opMult();
         break;
         }
       case TK_minus:{
         jj_consume_token(TK_minus);
-        opMult();
         break;
         }
       default:
-        jj_la1[39] = jj_gen;
+        jj_la1[44] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
+      opMult();
     }
 }
 
-/* opMult ::=
-    unary ('*' unary)* |
-    unary ('/' unary)* 
-*/
+// opMult ::= unary (('*' | '/' | '%') unary)*
   final public void opMult() throws ParseException {
     unary();
-    label_14:
+    label_13:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TK_mult:
@@ -1037,30 +1073,28 @@ painter.SYMBS1(t.beginColumn, t.image.length());
         break;
         }
       default:
-        jj_la1[40] = jj_gen;
-        break label_14;
+        jj_la1[45] = jj_gen;
+        break label_13;
       }
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TK_mult:{
         jj_consume_token(TK_mult);
-        unary();
         break;
         }
       case TK_div:{
         jj_consume_token(TK_div);
-        unary();
         break;
         }
       case TK_mod:{
         jj_consume_token(TK_mod);
-        unary();
         break;
         }
       default:
-        jj_la1[41] = jj_gen;
+        jj_la1[46] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
+      unary();
     }
 }
 
@@ -1069,7 +1103,7 @@ painter.SYMBS1(t.beginColumn, t.image.length());
     '!' unary |
     primitive 
 */
-  final public void unary() throws ParseException {
+  final public void unary() throws ParseException {Token id;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case TK_minus:{
       jj_consume_token(TK_minus);
@@ -1088,25 +1122,41 @@ painter.SYMBS1(t.beginColumn, t.image.length());
     case RW_double:
     case RW_true:
     case RW_false:
+    case RW_round:
+    case RW_abs:
     case TK_char:
     case TK_string:
     case TK_int:
     case TK_double:
     case TK_id:
-    case TK_lpar:{
+    case TK_lpar:
+    case TK_lbrk:{
       primitive();
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case TK_dot:{
+        jj_consume_token(TK_dot);
+        id = jj_consume_token(RW_size);
+painter.ATTRIB(id.beginColumn, id.image.length());
+        break;
+        }
+      default:
+        jj_la1[47] = jj_gen;
+        ;
+      }
       break;
       }
     default:
-      jj_la1[42] = jj_gen;
+      jj_la1[48] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
 }
 
 /* primitive ::=
-    INCDEC      |
-    CALLFUNC    |
+    ACCESS      |
+    CAST        |
+    NATIVEFUNC  |
+    VECTOR      |
     TK_id       |
     TK_string   |
     TK_char     |
@@ -1117,14 +1167,27 @@ painter.SYMBS1(t.beginColumn, t.image.length());
     '(' EXP ')' 
 */
   final public void primitive() throws ParseException {Token tr;
-    if (jj_2_9(2)) {
-      INCDEC();
-    } else if (jj_2_10(2)) {
-      CALLFUNC();
-    } else if (jj_2_11(2)) {
-      CAST();
+    if (jj_2_3(2)) {
+      ACCESS();
     } else {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case RW_String:
+      case RW_boolean:
+      case RW_char:
+      case RW_int:
+      case RW_double:{
+        CAST();
+        break;
+        }
+      case RW_round:
+      case RW_abs:{
+        NATIVEFUNC();
+        break;
+        }
+      case TK_lbrk:{
+        VECTOR();
+        break;
+        }
       case TK_id:{
         tr = jj_consume_token(TK_id);
 painter.USEVARIABLE(tr.beginColumn, tr.image.length());
@@ -1167,11 +1230,229 @@ painter.RW3(tr.beginColumn, tr.image.length());
         break;
         }
       default:
-        jj_la1[43] = jj_gen;
+        jj_la1[49] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
     }
+}
+
+// ACCESS ::= TK_id ('(' LISTARGS ')' | VECTORPOS? ('++' | '--')?)
+  final public void ACCESS() throws ParseException {Token id;
+    id = jj_consume_token(TK_id);
+    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+    case TK_lpar:{
+painter.USEFNC(id.beginColumn, id.image.length());
+      COLORLPAR();
+      LISTARGS();
+      COLORRPAR();
+      break;
+      }
+    default:
+      jj_la1[53] = jj_gen;
+painter.USEVARIABLE(id.beginColumn, id.image.length());
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case TK_lbrk:{
+        VECTORPOS();
+        break;
+        }
+      default:
+        jj_la1[50] = jj_gen;
+        ;
+      }
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case TK_inc:
+      case TK_dec:{
+        switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+        case TK_inc:{
+          jj_consume_token(TK_inc);
+          break;
+          }
+        case TK_dec:{
+          jj_consume_token(TK_dec);
+          break;
+          }
+        default:
+          jj_la1[51] = jj_gen;
+          jj_consume_token(-1);
+          throw new ParseException();
+        }
+        break;
+        }
+      default:
+        jj_la1[52] = jj_gen;
+        ;
+      }
+    }
+}
+
+// LISTARGS ::= (EXP (',' EXP)*)?
+  final public void LISTARGS() throws ParseException {
+    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+    case RW_String:
+    case RW_boolean:
+    case RW_char:
+    case RW_int:
+    case RW_double:
+    case RW_true:
+    case RW_false:
+    case RW_round:
+    case RW_abs:
+    case TK_char:
+    case TK_string:
+    case TK_int:
+    case TK_double:
+    case TK_id:
+    case TK_minus:
+    case TK_not:
+    case TK_lpar:
+    case TK_lbrk:{
+      EXP();
+      label_14:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+        case TK_comma:{
+          ;
+          break;
+          }
+        default:
+          jj_la1[54] = jj_gen;
+          break label_14;
+        }
+        jj_consume_token(TK_comma);
+        EXP();
+      }
+      break;
+      }
+    default:
+      jj_la1[55] = jj_gen;
+      ;
+    }
+}
+
+// VECTORPOS ::= '[' EXP ']' ('[' EXP ']')*
+  final public void VECTORPOS() throws ParseException {
+    COLORLBRK();
+    EXP();
+    COLORRBRK();
+    label_15:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case TK_lbrk:{
+        ;
+        break;
+        }
+      default:
+        jj_la1[56] = jj_gen;
+        break label_15;
+      }
+      COLORLBRK();
+      EXP();
+      COLORRBRK();
+    }
+}
+
+// CAST ::= TYPE '(' EXP ')'
+  final public void CAST() throws ParseException {
+    TYPE();
+    COLORLPAR();
+    EXP();
+    COLORRPAR();
+}
+
+/* NATIVEFUNC ::=
+    'round' '(' EXP (',' EXP)? ')' |
+    'abs'   '(' EXP ')'            
+*/
+  final public void NATIVEFUNC() throws ParseException {Token n;
+    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+    case RW_round:{
+      n = jj_consume_token(RW_round);
+painter.USEFNC(n.beginColumn, n.image.length());
+      COLORLPAR();
+      EXP();
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case TK_comma:{
+        jj_consume_token(TK_comma);
+        EXP();
+        break;
+        }
+      default:
+        jj_la1[57] = jj_gen;
+        ;
+      }
+      COLORRPAR();
+      break;
+      }
+    case RW_abs:{
+      n = jj_consume_token(RW_abs);
+painter.USEFNC(n.beginColumn, n.image.length());
+      COLORLPAR();
+      EXP();
+      COLORRPAR();
+      break;
+      }
+    default:
+      jj_la1[58] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+}
+
+// VECTOR ::= '[' (EXP (',' EXP)*)? ']'
+  final public void VECTOR() throws ParseException {
+    COLORLBRK();
+    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+    case RW_String:
+    case RW_boolean:
+    case RW_char:
+    case RW_int:
+    case RW_double:
+    case RW_true:
+    case RW_false:
+    case RW_round:
+    case RW_abs:
+    case TK_char:
+    case TK_string:
+    case TK_int:
+    case TK_double:
+    case TK_id:
+    case TK_minus:
+    case TK_not:
+    case TK_lpar:
+    case TK_lbrk:{
+      EXP();
+      label_16:
+      while (true) {
+        switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+        case TK_comma:{
+          ;
+          break;
+          }
+        default:
+          jj_la1[59] = jj_gen;
+          break label_16;
+        }
+        jj_consume_token(TK_comma);
+        EXP();
+      }
+      break;
+      }
+    default:
+      jj_la1[60] = jj_gen;
+      ;
+    }
+    COLORRBRK();
+}
+
+  final public void COLORLBRK() throws ParseException {Token l;
+    l = jj_consume_token(TK_lbrk);
+painter.BRKT(nIB, l.beginColumn, l.image.length()); nIB ++;
+}
+
+  final public void COLORRBRK() throws ParseException {Token r;
+    r = jj_consume_token(TK_rbrk);
+nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
 }
 
   final public void COLORLBRC() throws ParseException {Token l;
@@ -1218,277 +1499,121 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
     finally { jj_save(2, xla); }
   }
 
-  private boolean jj_2_4(int xla)
+  private boolean jj_3R_ACCESS_458_68_26()
  {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return (!jj_3_4()); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(3, xla); }
-  }
-
-  private boolean jj_2_5(int xla)
- {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return (!jj_3_5()); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(4, xla); }
-  }
-
-  private boolean jj_2_6(int xla)
- {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return (!jj_3_6()); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(5, xla); }
-  }
-
-  private boolean jj_2_7(int xla)
- {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return (!jj_3_7()); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(6, xla); }
-  }
-
-  private boolean jj_2_8(int xla)
- {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return (!jj_3_8()); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(7, xla); }
-  }
-
-  private boolean jj_2_9(int xla)
- {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return (!jj_3_9()); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(8, xla); }
-  }
-
-  private boolean jj_2_10(int xla)
- {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return (!jj_3_10()); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(9, xla); }
-  }
-
-  private boolean jj_2_11(int xla)
- {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return (!jj_3_11()); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(10, xla); }
-  }
-
-  private boolean jj_3R_DECLID_182_5_15()
- {
-    if (jj_3R_TYPE_377_5_22()) return true;
-    if (jj_3R_INITIDS_188_5_23()) return true;
-    if (jj_scan_token(TK_semicolon)) return true;
+    if (jj_3R_VECTORPOS_467_5_28()) return true;
     return false;
   }
 
-  private boolean jj_3_5()
+  private boolean jj_3R_ASSIGN_289_5_18()
  {
-    if (jj_3R_ADDSUB_306_5_19()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_INITIDS_188_92_33()
- {
-    if (jj_scan_token(TK_comma)) return true;
-    return false;
-  }
-
-  private boolean jj_3_4()
- {
-    if (jj_3R_REASIGN_294_5_18()) return true;
-    return false;
-  }
-
-  private boolean jj_3_3()
- {
-    if (jj_3R_INCDEC_300_5_17()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_CALLFUNC_174_5_20()
- {
-    if (jj_scan_token(TK_id)) return true;
-    if (jj_3R_COLORLPAR_480_5_26()) return true;
-    return false;
-  }
-
-  private boolean jj_3_8()
- {
-    if (jj_3R_INCDEC_300_5_17()) return true;
-    return false;
-  }
-
-  private boolean jj_3_11()
- {
-    if (jj_3R_CAST_310_5_21()) return true;
-    return false;
-  }
-
-  private boolean jj_3_7()
- {
-    if (jj_3R_ADDSUB_306_5_19()) return true;
-    return false;
-  }
-
-  private boolean jj_3_10()
- {
-    if (jj_3R_CALLFUNC_174_5_20()) return true;
-    return false;
-  }
-
-  private boolean jj_3_6()
- {
-    if (jj_3R_REASIGN_294_5_18()) return true;
-    return false;
-  }
-
-  private boolean jj_3_9()
- {
-    if (jj_3R_INCDEC_300_5_17()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_CAST_310_5_21()
- {
-    if (jj_3R_TYPE_377_5_22()) return true;
-    if (jj_3R_COLORLPAR_480_5_26()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_ADDSUB_306_5_19()
- {
-    if (jj_scan_token(TK_id)) return true;
+    if (jj_3R_IDPOS_295_5_20()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_scan_token(29)) {
+    if (jj_3R_ASSIGN_289_14_21()) {
     jj_scanpos = xsp;
-    if (jj_scan_token(30)) return true;
+    if (jj_3R_ASSIGN_289_96_22()) return true;
     }
     return false;
   }
 
-  private boolean jj_3R_INITIDS_188_74_32()
+  private boolean jj_3R_ASSIGN_289_96_22()
  {
-    if (jj_scan_token(TK_equ)) return true;
-    return false;
-  }
-
-  private boolean jj_3_2()
- {
-    if (jj_3R_DECLFUNC_197_5_16()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(31)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(32)) return true;
+    }
     return false;
   }
 
   private boolean jj_3_1()
  {
-    if (jj_3R_DECLID_182_5_15()) return true;
-    return false;
-  }
-
-  private boolean jj_3R_INCDEC_300_5_17()
- {
     if (jj_scan_token(TK_id)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(27)) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(28)) return true;
-    }
+    if (jj_3R_COLORLPAR_515_5_17()) return true;
     return false;
   }
 
-  private boolean jj_3R_REASIGN_294_5_18()
- {
-    if (jj_scan_token(TK_id)) return true;
-    if (jj_scan_token(TK_equ)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_COLORLPAR_480_5_26()
+  private boolean jj_3R_COLORLPAR_515_5_17()
  {
     if (jj_scan_token(TK_lpar)) return true;
     return false;
   }
 
-  private boolean jj_3R_DECLFUNC_198_5_25()
+  private boolean jj_3R_COLORLBRK_491_5_29()
  {
-    if (jj_scan_token(RW_void)) return true;
-    if (jj_scan_token(TK_id)) return true;
-    if (jj_3R_COLORLPAR_480_5_26()) return true;
+    if (jj_scan_token(TK_lbrk)) return true;
     return false;
   }
 
-  private boolean jj_3R_DECLFUNC_197_5_24()
+  private boolean jj_3R_VECTORPOS_467_5_28()
  {
-    if (jj_3R_TYPE_377_5_22()) return true;
-    if (jj_scan_token(TK_id)) return true;
-    if (jj_3R_COLORLPAR_480_5_26()) return true;
+    if (jj_3R_COLORLBRK_491_5_29()) return true;
     return false;
   }
 
-  private boolean jj_3R_DECLFUNC_197_5_16()
+  private boolean jj_3R_ACCESS_458_83_27()
  {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_DECLFUNC_197_5_24()) {
+    if (jj_scan_token(31)) {
     jj_scanpos = xsp;
-    if (jj_3R_DECLFUNC_198_5_25()) return true;
+    if (jj_scan_token(32)) return true;
     }
     return false;
   }
 
-  private boolean jj_3R_TYPE_381_5_31()
- {
-    if (jj_scan_token(RW_double)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_TYPE_380_5_30()
- {
-    if (jj_scan_token(RW_char)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_TYPE_379_5_29()
- {
-    if (jj_scan_token(RW_boolean)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_TYPE_378_5_28()
- {
-    if (jj_scan_token(RW_int)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_TYPE_377_5_27()
- {
-    if (jj_scan_token(RW_String)) return true;
-    return false;
-  }
-
-  private boolean jj_3R_TYPE_377_5_22()
+  private boolean jj_3R_ACCESS_458_9_24()
  {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_TYPE_377_5_27()) {
+    if (jj_3R_ACCESS_458_68_26()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_ACCESS_458_83_27()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3_3()
+ {
+    if (jj_3R_ACCESS_456_5_19()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_ACCESS_457_9_23()
+ {
+    if (jj_3R_COLORLPAR_515_5_17()) return true;
+    return false;
+  }
+
+  private boolean jj_3_2()
+ {
+    if (jj_3R_ASSIGN_289_5_18()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_IDPOS_295_77_25()
+ {
+    if (jj_3R_VECTORPOS_467_5_28()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_ASSIGN_289_14_21()
+ {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(47)) {
     jj_scanpos = xsp;
-    if (jj_3R_TYPE_378_5_28()) {
+    if (jj_scan_token(33)) {
     jj_scanpos = xsp;
-    if (jj_3R_TYPE_379_5_29()) {
+    if (jj_scan_token(34)) {
     jj_scanpos = xsp;
-    if (jj_3R_TYPE_380_5_30()) {
+    if (jj_scan_token(35)) {
     jj_scanpos = xsp;
-    if (jj_3R_TYPE_381_5_31()) return true;
+    if (jj_scan_token(36)) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(37)) return true;
+    }
     }
     }
     }
@@ -1496,15 +1621,23 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
     return false;
   }
 
-  private boolean jj_3R_INITIDS_188_5_23()
+  private boolean jj_3R_IDPOS_295_5_20()
  {
     if (jj_scan_token(TK_id)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_INITIDS_188_74_32()) jj_scanpos = xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_INITIDS_188_92_33()) { jj_scanpos = xsp; break; }
+    if (jj_3R_IDPOS_295_77_25()) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_ACCESS_456_5_19()
+ {
+    if (jj_scan_token(TK_id)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_ACCESS_457_9_23()) {
+    jj_scanpos = xsp;
+    if (jj_3R_ACCESS_458_9_24()) return true;
     }
     return false;
   }
@@ -1520,20 +1653,25 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
   private Token jj_scanpos, jj_lastpos;
   private int jj_la;
   private int jj_gen;
-  final private int[] jj_la1 = new int[44];
+  final private int[] jj_la1 = new int[61];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
+  static private int[] jj_la1_2;
   static {
 	   jj_la1_init_0();
 	   jj_la1_init_1();
+	   jj_la1_init_2();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0xfe,0x2,0x0,0x7d800f8,0x0,0x0,0x0,0xfc,0x0,0xf8,0x100,0x200,0x4000,0x8000,0x4000,0x0,0x0,0x40000f8,0x7d800f8,0x4000000,0x40000f8,0x0,0x0,0x18000000,0x60000000,0x7d800f8,0x4273df8,0x7d800f8,0x3df8,0x4270000,0xf8,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80000000,0x80000000,0x0,0x0,0x7d800f8,0x7d80000,};
+	   jj_la1_0 = new int[] {0xfe,0xfe,0x40000000,0xfc,0x0,0xf8,0x0,0x0,0x0,0x100,0x200,0x4000,0x8000,0x4000,0x0,0x0,0x400000f8,0x7e9800f8,0x40000000,0x400000f8,0x0,0x0,0x0,0x80000000,0x80000000,0x0,0x7e9800f8,0x600000,0x40673df8,0x7e9800f8,0x3df8,0x40670000,0x0,0x0,0x0,0xf8,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7e9800f8,0x7e9800f8,0x0,0x80000000,0x80000000,0x0,0x0,0x7e9800f8,0x0,0x0,0x2800000,0x0,0x7e9800f8,};
 	}
 	private static void jj_la1_init_1() {
-	   jj_la1_1 = new int[] {0x0,0x0,0x40000,0x6001,0x100,0x40000,0x100,0x0,0x40000,0x0,0x10000,0x0,0x0,0x0,0x0,0x10000,0x10000,0x0,0x6001,0x0,0x0,0x40000,0x40000,0x0,0x0,0x6001,0x0,0x6001,0x0,0x0,0x0,0x200000,0x1000,0x800,0x30,0x30,0x6c0,0x6c0,0x1,0x1,0xe,0xe,0x6001,0x4000,};
+	   jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x10000000,0x0,0x8000,0x10000000,0x8000,0x800000,0x0,0x0,0x0,0x0,0x800000,0x800000,0x0,0x2300080,0x0,0x0,0x10000000,0x10000000,0x803e,0x1,0x803f,0x2000000,0x2300080,0x0,0x0,0x2300080,0x0,0x0,0x2000000,0x2000000,0x2000000,0x0,0x80000000,0x80000,0x40000,0x1800,0x1800,0x36000,0x36000,0xc0,0xc0,0x700,0x700,0x8000000,0x2300080,0x2200000,0x2000000,0x1,0x1,0x200000,0x10000000,0x2300080,0x2000000,0x10000000,0x0,0x10000000,0x2300080,};
 	}
-  final private JJCalls[] jj_2_rtns = new JJCalls[11];
+	private static void jj_la1_init_2() {
+	   jj_la1_2 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+	}
+  final private JJCalls[] jj_2_rtns = new JJCalls[3];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -1548,7 +1686,7 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 44; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 61; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1563,7 +1701,7 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 44; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 61; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1574,7 +1712,7 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 44; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 61; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1593,7 +1731,7 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 44; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 61; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1603,7 +1741,7 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 44; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 61; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1613,7 +1751,7 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 44; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 61; i++) jj_la1[i] = -1;
 	 for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -1744,12 +1882,12 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
   /** Generate ParseException. */
   public ParseException generateParseException() {
 	 jj_expentries.clear();
-	 boolean[] la1tokens = new boolean[61];
+	 boolean[] la1tokens = new boolean[71];
 	 if (jj_kind >= 0) {
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
 	 }
-	 for (int i = 0; i < 44; i++) {
+	 for (int i = 0; i < 61; i++) {
 	   if (jj_la1[i] == jj_gen) {
 		 for (int j = 0; j < 32; j++) {
 		   if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -1758,10 +1896,13 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
 		   if ((jj_la1_1[i] & (1<<j)) != 0) {
 			 la1tokens[32+j] = true;
 		   }
+		   if ((jj_la1_2[i] & (1<<j)) != 0) {
+			 la1tokens[64+j] = true;
+		   }
 		 }
 	   }
 	 }
-	 for (int i = 0; i < 61; i++) {
+	 for (int i = 0; i < 71; i++) {
 	   if (la1tokens[i]) {
 		 jj_expentry = new int[1];
 		 jj_expentry[0] = i;
@@ -1795,7 +1936,7 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
 
   private void jj_rescan_token() {
 	 jj_rescan = true;
-	 for (int i = 0; i < 11; i++) {
+	 for (int i = 0; i < 3; i++) {
 	   try {
 		 JJCalls p = jj_2_rtns[i];
 
@@ -1806,14 +1947,6 @@ nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());
 			   case 0: jj_3_1(); break;
 			   case 1: jj_3_2(); break;
 			   case 2: jj_3_3(); break;
-			   case 3: jj_3_4(); break;
-			   case 4: jj_3_5(); break;
-			   case 5: jj_3_6(); break;
-			   case 6: jj_3_7(); break;
-			   case 7: jj_3_8(); break;
-			   case 8: jj_3_9(); break;
-			   case 9: jj_3_10(); break;
-			   case 10: jj_3_11(); break;
 			 }
 		   }
 		   p = p.next;

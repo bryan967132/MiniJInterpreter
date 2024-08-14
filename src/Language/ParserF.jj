@@ -42,7 +42,11 @@ TOKEN : {
     <RW_return   : "return">   {matchedToken.beginColumn = input_stream.tokenBegin;} |
     <RW_true     : "true">     {matchedToken.beginColumn = input_stream.tokenBegin;} |
     <RW_false    : "false">    {matchedToken.beginColumn = input_stream.tokenBegin;} |
-    <RW_print    : "print">    {matchedToken.beginColumn = input_stream.tokenBegin;} 
+    <RW_println  : "println">  {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <RW_print    : "print">    {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <RW_round    : "round">    {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <RW_size     : "size">     {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <RW_abs      : "abs">      {matchedToken.beginColumn = input_stream.tokenBegin;} 
 }
 
 // Valores
@@ -66,8 +70,11 @@ TOKEN : {
 
 // Concatenacion
 TOKEN : {
-    <TK_add : "+="> {matchedToken.beginColumn = input_stream.tokenBegin;} |
-    <TK_sub : "-="> {matchedToken.beginColumn = input_stream.tokenBegin;} 
+    <TK_plusc  : "+="> {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <TK_minusc : "-="> {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <TK_multc  : "*="> {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <TK_divc   : "/="> {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <TK_modc   : "%="> {matchedToken.beginColumn = input_stream.tokenBegin;} 
 }
 
 // Operadores Aritméticos
@@ -102,14 +109,17 @@ TOKEN : {
     <TK_lpar : "("> {matchedToken.beginColumn = input_stream.tokenBegin;} |
     <TK_rpar : ")"> {matchedToken.beginColumn = input_stream.tokenBegin;} |
     <TK_lbrc : "{"> {matchedToken.beginColumn = input_stream.tokenBegin;} |
-    <TK_rbrc : "}"> {matchedToken.beginColumn = input_stream.tokenBegin;} 
+    <TK_rbrc : "}"> {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <TK_lbrk : "["> {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <TK_rbrk : "]"> {matchedToken.beginColumn = input_stream.tokenBegin;} 
 }
 
 // Signos
 TOKEN : {
-    <TK_comma     : ","> {matchedToken.beginColumn = input_stream.tokenBegin;} |    
-    <TK_colon     : ":"> {matchedToken.beginColumn = input_stream.tokenBegin;} |    
-    <TK_semicolon : ";"> {matchedToken.beginColumn = input_stream.tokenBegin;} |    
+    <TK_dot       : "."> {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <TK_comma     : ","> {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <TK_colon     : ":"> {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <TK_semicolon : ";"> {matchedToken.beginColumn = input_stream.tokenBegin;} |
     <TK_question  : "?"> {matchedToken.beginColumn = input_stream.tokenBegin;} 
 }
 
@@ -153,13 +163,11 @@ void INSTSGLOBAL() : {} {
 }
 /* INSTGLOBAL ::=
     CALLMAINFUNC |
-    DECLID       |
     DECLFUNC     
 */
 void INSTGLOBAL() : {} {
-    CALLMAINFUNC()          |
-    LOOKAHEAD(3) DECLID()   |
-    LOOKAHEAD(3) DECLFUNC() 
+    CALLMAINFUNC() |
+    DECLFUNC()     
 }
 // CALLMAINFUNC ::= 'main' CALLFUNC ';'
 void CALLMAINFUNC() : {
@@ -173,13 +181,28 @@ void CALLFUNC() : {
 } {
     id = <TK_id> {painter.USEFNC(id.beginColumn, id.image.length());} COLORLPAR() LISTARGS() COLORRPAR()
 }
-// LISTARGS ::= (EXP (',' EXP)*)?
-void LISTARGS() : {} {
-    (EXP() (<TK_comma> EXP())*)?
+/* DECLFUNC ::=
+    DATATYPE (TK_id '(' LISTPARAMS ')' ENV | INITIDS ';') |
+    'void'   TK_id '(' LISTPARAMS ')' ENV                 
+*/
+void DECLFUNC() : {
+    Token i;
+} {
+    DATATYPE() (
+        LOOKAHEAD(2) i = <TK_id> {painter.FNC(i.beginColumn, i.image.length());} COLORLPAR() LISTPARAMS() COLORRPAR() ENV() |
+        INITIDS() <TK_semicolon>
+    ) |
+    i = <RW_void> {painter.RW1(i.beginColumn, i.image.length());} i = <TK_id> {painter.FNC(i.beginColumn, i.image.length());} COLORLPAR() LISTPARAMS() COLORRPAR() ENV() 
 }
-// DECLID ::= TYPE INITIDS ';'
-void DECLID() : {} {
-    TYPE() INITIDS() <TK_semicolon>
+// LISTPARAMS ::= (DATATYPE TK_id (',' DATATYPE TK_id)*)?
+void LISTPARAMS() : {
+    Token id;
+} {
+    (DATATYPE() id = <TK_id> {painter.VARIABLE(id.beginColumn, id.image.length());} (<TK_comma> DATATYPE() id = <TK_id> {painter.VARIABLE(id.beginColumn, id.image.length());})*)?
+}
+// INITVAR ::= DATATYPE INITIDS ';'
+void INITVAR() : {} {
+    DATATYPE() INITIDS() <TK_semicolon>
 }
 // INITIDS ::= TK_id ('=' EXP)? (',' TK_id ('=' EXP)?)*
 void INITIDS() : {
@@ -187,30 +210,14 @@ void INITIDS() : {
 } {
     id = <TK_id> {painter.VARIABLE(id.beginColumn, id.image.length());} (<TK_equ> EXP())? (<TK_comma> id = <TK_id> {painter.VARIABLE(id.beginColumn, id.image.length());} (<TK_equ> EXP())?)*
 }
-/* DECLFUNC ::=
-    TYPE   TK_id '(' LISTPARAMS ')' ENV |
-    'void' TK_id '(' LISTPARAMS ')' ENV
-*/
-void DECLFUNC() : {
+// IF ::= 'if' '(' EXP ')' ENV ('else' (IF | ENV))?
+void IF() : {
     Token i;
 } {
-    TYPE() i = <TK_id> {painter.FNC(i.beginColumn, i.image.length());} COLORLPAR() LISTPARAMS() COLORRPAR() ENV()    |
-    i = <RW_void> {painter.RW1(i.beginColumn, i.image.length());} i = <TK_id> {painter.FNC(i.beginColumn, i.image.length());} COLORLPAR() LISTPARAMS() COLORRPAR() ENV() 
+    i = <RW_if> {painter.RW2(i.beginColumn, i.image.length());} COLORLPAR() EXP() COLORRPAR() ENV() (i = <RW_else> {painter.RW2(i.beginColumn, i.image.length());} (IF() | ENV()))?
 }
-// LISTPARAMS ::= (TYPE TK_id (',' TYPE TK_id)*)?
-void LISTPARAMS() : {
-    Token id;
-} {
-    (TYPE() id = <TK_id> {painter.VARIABLE(id.beginColumn, id.image.length());} (<TK_comma> TYPE() id = <TK_id> {painter.VARIABLE(id.beginColumn, id.image.length());})*)?
-}
-// IFSTRUCT ::= 'if' '(' EXP ')' ENV ('else' (IFSTRUCT | ENV))?
-void IFSTRUCT() : {
-    Token i;
-} {
-    i = <RW_if> {painter.RW2(i.beginColumn, i.image.length());} COLORLPAR() EXP() COLORRPAR() ENV() (i = <RW_else> {painter.RW2(i.beginColumn, i.image.length());} (IFSTRUCT() | ENV()))?
-}
-// SWITCHSTRUCT ::= 'switch' '(' EXP ')' ENVS
-void SWITCHSTRUCT() : {
+// SWITCH ::= 'switch' '(' EXP ')' ENVS
+void SWITCH() : {
     Token sw;
 } {
     sw = <RW_switch> {painter.RW2(sw.beginColumn, sw.image.length());} COLORLPAR() EXP() COLORRPAR() ENVS()
@@ -239,8 +246,8 @@ void DEFAULT() : {
 } {
     d = <RW_default> {painter.RW2(d.beginColumn, d.image.length());} d = <TK_colon> {painter.SYMBS1(d.beginColumn, d.image.length());} (ENV() | INSTRUCTIONS())
 }
-// LOOPFOR ::= 'for' '(' ARGSFOR ')' ENV
-void LOOPFOR() : {
+// FOR ::= 'for' '(' ARGSFOR ')' ENV
+void FOR() : {
     Token f;
 } {
     f = <RW_for> {painter.RW2(f.beginColumn, f.image.length());} COLORLPAR() ARGSFOR() COLORRPAR() ENV()
@@ -250,70 +257,49 @@ void ARGSFOR() : {} {
     (INITIALIZEFOR())? <TK_semicolon> (EXP())? <TK_semicolon> (UPDATESFOR())?
 }
 /* INITIALIZEFOR ::=
-    TYPE INITIDSFOR |
-    REASIGNS        
+    DATATYPE INITIDSFOR |
+    REASIGNS            
 */
 void INITIALIZEFOR() : {} {
-    TYPE() REASIGNS() |
-    REASIGNS()          
+    DATATYPE() REASIGNS() |
+    REASIGNS()            
 }
-// REASIGNS ::= REASIGN (',' REASIGN)*
+// REASIGNS ::= ASSIGN (',' ASSIGN)*
 void REASIGNS() : {} {
-    REASIGN() (<TK_comma> REASIGN())*
+    IDPOS() <TK_equ> EXP() (<TK_comma> IDPOS() <TK_equ> EXP())*
 }
-// UPDATESFOR ::= UPDATEFOR (',' UPDATEFOR)*
+// UPDATESFOR ::= ASSIGN (',' ASSIGN)*
 void UPDATESFOR() : {} {
-    UPDATEFOR() (<TK_comma> UPDATEFOR())*
+    ASSIGN() (<TK_comma> ASSIGN())*
 }
-/* UPDATEFOR ::=
-    INCDEC  |
-    REASIGN |
-    ADDSUB  
-*/
-void UPDATEFOR() : {} {
-    LOOKAHEAD(2) INCDEC()  |
-    LOOKAHEAD(2) REASIGN() |
-    LOOKAHEAD(2) ADDSUB()  
-}
-// LOOPWHILE ::= 'while' '(' EXP ')' ENV
-void LOOPWHILE() : {
+// WHILE ::= 'while' '(' EXP ')' ENV
+void WHILE() : {
     Token w;
 } {
     w = <RW_while> {painter.RW2(w.beginColumn, w.image.length());} COLORLPAR() EXP() COLORRPAR() ENV()
 }
-// LOOPDOWHILE ::= 'do' ENV 'while' '(' EXP ')' ';'
-void LOOPDOWHILE() : {
+// DOWHILE ::= 'do' ENV 'while' '(' EXP ')' ';'
+void DOWHILE() : {
     Token w;
 } {
     w = <RW_do> {painter.RW2(w.beginColumn, w.image.length());} ENV() w = <RW_while> {painter.RW2(w.beginColumn, w.image.length());} COLORLPAR() EXP() COLORRPAR() <TK_semicolon>
 }
-// REASIGN ::= TK_id '=' EXP
-void REASIGN() : {
+// ASSIGN ::= TK_id (('=' | '+=' | '-=' | '*=' | '/=' | '%=') EXP | ('++' | '--'))
+void ASSIGN() : {} {
+    IDPOS() ((<TK_equ> | <TK_plusc> | <TK_minusc>| <TK_multc> | <TK_divc> | <TK_modc>) EXP() | (<TK_inc> | <TK_dec>))
+}
+// IDPOS ::= TK_id VECTORPOS?
+void IDPOS() : {
     Token id;
 } {
-    id = <TK_id> {painter.USEVARIABLE(id.beginColumn, id.image.length());} <TK_equ> EXP()
-}
-// INCDEC ::= TK_id ('++' | '--')
-void INCDEC() : {
-    Token id;
-} {
-    id = <TK_id> {painter.USEVARIABLE(id.beginColumn, id.image.length());} (<TK_inc> | <TK_dec>)
-}
-// ADDSUB ::= TK_id ('+=' | '-=') EXP
-void ADDSUB() : {
-    Token id;
-} {
-    id = <TK_id> {painter.USEVARIABLE(id.beginColumn, id.image.length());} (<TK_add> | <TK_sub>) EXP()
-}
-// CAST ::= TYPE TK_lpar EXP TK_rpar
-void CAST() : {} {
-    TYPE() COLORLPAR() EXP() COLORRPAR()
+    id = <TK_id> {painter.USEVARIABLE(id.beginColumn, id.image.length());} (VECTORPOS())?
 }
 // PRINT ::= 'PRINT' '(' EXP? ')' ';'
 void PRINT() : {
     Token p;
 } {
-	p = <RW_print> {painter.USEFNC(p.beginColumn, p.image.length());} COLORLPAR() (EXP())? COLORRPAR() <TK_semicolon>
+	p = <RW_println> {painter.USEFNC(p.beginColumn, p.image.length());} COLORLPAR() (EXP())? COLORRPAR() <TK_semicolon> |
+	p = <RW_print>   {painter.USEFNC(p.beginColumn, p.image.length());} COLORLPAR() (EXP()) COLORRPAR() <TK_semicolon>  
 }
 // ENV ::= '{' INSTRUCTIONS '}'
 void ENV() : {} {
@@ -334,35 +320,46 @@ void INSTRUCTIONS() : {} {
     )*
 }
 /* INSTRUCTION ::=
-    DECLID       |
-    IFSTRUCT     |
-    SWITCHSTRUCT |
-    LOOPFOR      |
-    LOOPWHILE    |
-    LOOPDOWHILE  |
-    REASIGN      |
-    ADDSUB       |
-    INCDEC       |
-    CALLFUNC ';' |
-    PRINT        
+    INITVAR       |
+    IF            |
+    SWITCH        |
+    FOR           |
+    WHILE         |
+    DOWHILE       |
+    ASSIGN        |
+    CALLFUNC ';'  |
+    PRINT         |
+    'return' EXP? |
+    'continue'    |
+    'break'       
 */
 void INSTRUCTION() : {
     Token t;
 } {
-    DECLID()                              |
-    IFSTRUCT()                            |
-    SWITCHSTRUCT()                        |
-    LOOPFOR()                             |
-    LOOPWHILE()                           |
-    LOOPDOWHILE()                         |
-    LOOKAHEAD(2) REASIGN() <TK_semicolon> |
-    LOOKAHEAD(2) ADDSUB()  <TK_semicolon> |
-    LOOKAHEAD(2) INCDEC()  <TK_semicolon> |
-    CALLFUNC()             <TK_semicolon> |
-	PRINT()                               |
+    INITVAR()                            |
+    IF()                                 |
+    SWITCH()                             |
+    FOR()                                |
+    WHILE()                              |
+    DOWHILE()                            |
+    LOOKAHEAD(2) ASSIGN() <TK_semicolon> |
+    CALLFUNC()            <TK_semicolon> |
+	PRINT()                              |
     t = <RW_return>   {painter.RW2(t.beginColumn, t.image.length());} (EXP())? <TK_semicolon> |
     t = <RW_continue> {painter.RW2(t.beginColumn, t.image.length());}          <TK_semicolon> |
     t = <RW_break>    {painter.RW2(t.beginColumn, t.image.length());}          <TK_semicolon> 
+}
+// DATATYPE ::= TYPE VECTORTYPE?
+void DATATYPE() : {} {
+    TYPE() (VECTORTYPE())?
+}
+// VECTORTYPE ::= '[' VECTORTYPE2? ']'
+void VECTORTYPE() : {} {
+    COLORLBRK() (VECTORTYPE2())? COLORRBRK()
+}
+// VECTORTYPE2 ::= '[' VECTORTYPE? ']'
+void VECTORTYPE2() : {} {
+    COLORLBRK() (VECTORTYPE())? COLORRBRK()
 }
 /* TYPE ::=
     RW_String  |
@@ -394,49 +391,39 @@ void opOr() : {} {
 void opAnd() : {} {
     opEqu() (<TK_and> opEqu())*
 }
-/*opEqu ::=
-    opCmp ('==' opCmp)* |
-    opCmp ('!=' opCmp)* 
-*/
+// opEqu ::= opCmp (('==' | '!=') opCmp)*
 void opEqu() : {} {
-    opCmp() (<TK_equequ> opCmp() | <TK_notequ> opCmp())*
+    opCmp() ((<TK_equequ> | <TK_notequ>) opCmp())*
 }
-/* opCmp ::=
-    opAdd ('<=' opAdd)* |
-    opAdd ('>=' opAdd)* |
-    opAdd ('<' opAdd)*  |
-    opAdd ('>' opAdd)*  
-*/
+// opCmp ::= opAdd (('<=' | '>=' |'<' | '>') opAdd)*
 void opCmp() : {} {
-    opAdd() (<TK_lessequ> opAdd() | <TK_moreequ> opAdd() | <TK_less>    opAdd() | <TK_more>    opAdd())*
+    opAdd() ((<TK_lessequ> | <TK_moreequ> | <TK_less> | <TK_more>) opAdd())*
 }
-/* opAdd ::=
-    opMult ('+' opMult)* |
-    opMult ('-' opMult)* 
-*/
+// opAdd ::= opMult (('+' | '-') opMult)*
 void opAdd() : {} {
-    opMult() (<TK_plus>  opMult() | <TK_minus> opMult())*
+    opMult() ((<TK_plus> | <TK_minus>) opMult())*
 }
-/* opMult ::=
-    unary ('*' unary)* |
-    unary ('/' unary)* 
-*/
+// opMult ::= unary (('*' | '/' | '%') unary)*
 void opMult() : {} {
-    unary() (<TK_mult> unary() | <TK_div>  unary() | <TK_mod>  unary())*
+    unary() ((<TK_mult> | <TK_div> | <TK_mod>) unary())*
 }
 /* unary ::=
     '-' unary |
     '!' unary |
     primitive 
 */
-void unary() : {} {
+void unary() : {
+    Token id;
+} {
     <TK_minus> unary() |
     <TK_not>   unary() |
-    primitive()        
+    primitive() (<TK_dot> id = <RW_size> {painter.ATTRIB(id.beginColumn, id.image.length());})?
 }
 /* primitive ::=
-    INCDEC      |
-    CALLFUNC    |
+    ACCESS      |
+    CAST        |
+    NATIVEFUNC  |
+    VECTOR      |
     TK_id       |
     TK_string   |
     TK_char     |
@@ -449,9 +436,10 @@ void unary() : {} {
 void primitive() : {
     Token tr;
 } {
-    LOOKAHEAD(2) INCDEC()         |
-    LOOKAHEAD(2) CALLFUNC()       |
-    LOOKAHEAD(2) CAST()           |
+    LOOKAHEAD(2) ACCESS()         |
+    CAST()                        |
+    NATIVEFUNC()                  |
+    VECTOR()                      |
     tr = <TK_id>                  {painter.USEVARIABLE(tr.beginColumn, tr.image.length());} |
     tr = <TK_string>              {painter.STRING(tr.beginColumn, tr.image.length());     } |
     tr = <TK_char>                {painter.CHAR(tr.beginColumn, tr.image.length());       } |
@@ -460,6 +448,53 @@ void primitive() : {
     tr = <RW_true>                {painter.RW3(tr.beginColumn, tr.image.length());        } |
     tr = <RW_false>               {painter.RW3(tr.beginColumn, tr.image.length());        } |
     COLORLPAR() EXP() COLORRPAR() 
+}
+// ACCESS ::= TK_id ('(' LISTARGS ')' | VECTORPOS? ('++' | '--')?)
+void ACCESS() : {
+    Token id;
+} {
+    id = <TK_id> (
+        {painter.USEFNC(id.beginColumn, id.image.length());} COLORLPAR() LISTARGS() COLORRPAR() |
+        {painter.USEVARIABLE(id.beginColumn, id.image.length());} (VECTORPOS())? (<TK_inc> | <TK_dec>)?
+    )
+}
+// LISTARGS ::= (EXP (',' EXP)*)?
+void LISTARGS() : {} {
+    (EXP() (<TK_comma> EXP())*)?
+}
+// VECTORPOS ::= '[' EXP ']' ('[' EXP ']')*
+void VECTORPOS() : {} {
+    COLORLBRK() EXP() COLORRBRK() (COLORLBRK() EXP() COLORRBRK())*
+}
+// CAST ::= TYPE '(' EXP ')'
+void CAST() : {} {
+    TYPE() COLORLPAR() EXP() COLORRPAR()
+
+}/* NATIVEFUNC ::=
+    'round' '(' EXP (',' EXP)? ')' |
+    'abs'   '(' EXP ')'            
+*/
+void NATIVEFUNC() : {
+    Token n;
+} {
+    n = <RW_round> {painter.USEFNC(n.beginColumn, n.image.length());} COLORLPAR() EXP() (<TK_comma> EXP())? COLORRPAR() |
+    n = <RW_abs>   {painter.USEFNC(n.beginColumn, n.image.length());} COLORLPAR() EXP() COLORRPAR()                     
+}
+// VECTOR ::= '[' (EXP (',' EXP)*)? ']'
+void VECTOR() : {} {
+    COLORLBRK() (EXP() (<TK_comma> EXP())*)? COLORRBRK()
+}
+
+void COLORLBRK() : {
+    Token l;
+} {
+    l = <TK_lbrk> {painter.BRKT(nIB, l.beginColumn, l.image.length()); nIB ++;}
+}
+
+void COLORRBRK() : {
+    Token r;
+} {
+    r = <TK_rbrk> {nIB --; painter.BRKT(nIB, r.beginColumn, r.image.length());}
 }
 
 void COLORLBRC() : {
