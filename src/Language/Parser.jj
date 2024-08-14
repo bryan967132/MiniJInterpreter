@@ -154,7 +154,7 @@ ArrayList<Instruction> parse() : {
     ins = INIT() {return ins;}
 }
 
-// INIT := INSTRUCTIONS EOF
+// INIT ::= INSTRUCTIONS EOF
 ArrayList<Instruction> INIT() : {
     ArrayList<Instruction> ins;
 } {
@@ -327,7 +327,7 @@ Sentence FOR() : {
 } {
     f = <RW_for> <TK_lpar> args = ARGSFOR() <TK_rpar> b = ENV() {return new For(f.beginLine, f.beginColumn, (InitializeFor) args[0], (Expression) args[1], (ArrayList<Sentence>) args[2], b);}
 }
-// ARGSFOR ::= (UPDATESFOR)? ';' (EXP)? ';' (UPDATESFOR)?
+// ARGSFOR ::= (INITIALIZEFOR)? ';' (EXP)? ';' (UPDATESFOR)?
 Object[] ARGSFOR() : {
     InitializeFor i = null;
     Expression e = null;
@@ -459,8 +459,6 @@ ArrayList<Sentence> INSTRUCTIONS() : {
     WHILE               |
     DOWHILE             |
     ASSIGN          ';' |
-    ADDSUB          ';' |
-    INCDEC          ';' |
     CALLFUNC        ';' |
     PRINT               |
     'return' (EXP)? ';' |
@@ -507,11 +505,11 @@ int VECTORTYPE2() : {
     <TK_lbrk> (v = VECTORTYPE())? <TK_rbrk> {return v + 1;}
 }
 /* TYPE ::=
-    RW_String  |
-    RW_int     |
-    RW_boolean |
-    RW_char    |
-    RW_double  
+    'String'  |
+    'int'     |
+    'boolean' |
+    'char'    |
+    'double'  
 */
 Type TYPE() : {} {
     <RW_String>  {return Type.STRING; } |
@@ -668,7 +666,7 @@ ArrayList<Expression> VECTORPOS() : {
         <TK_lbrk> e = EXP() <TK_rbrk> {l.add(e);}
     )* {return l;}
 }
-// CAST ::= TYPE TK_lpar EXP TK_rpar
+// CAST ::= TYPE '(' EXP ')'
 Expression CAST() : {
     Token c;
     Type t;

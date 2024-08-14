@@ -143,7 +143,7 @@ void parse() : {} {
     INIT()
 }
 
-// INIT := INSTRUCTIONS EOF
+// INIT ::= INSTRUCTIONS EOF
 void INIT() : {} {
 	INSTSGLOBAL() <EOF>
 }
@@ -252,7 +252,7 @@ void FOR() : {
 } {
     f = <RW_for> {painter.RW2(f.beginColumn, f.image.length());} COLORLPAR() ARGSFOR() COLORRPAR() ENV()
 }
-// ARGSFOR ::= (UPDATESFOR)? ';' (EXP)? ';' (UPDATESFOR)?
+// ARGSFOR ::= (INITIALIZEFOR)? ';' (EXP)? ';' (UPDATESFOR)?
 void ARGSFOR() : {} {
     (INITIALIZEFOR())? <TK_semicolon> (EXP())? <TK_semicolon> (UPDATESFOR())?
 }
@@ -320,18 +320,18 @@ void INSTRUCTIONS() : {} {
     )*
 }
 /* INSTRUCTION ::=
-    INITVAR       |
-    IF            |
-    SWITCH        |
-    FOR           |
-    WHILE         |
-    DOWHILE       |
-    ASSIGN        |
-    CALLFUNC ';'  |
-    PRINT         |
-    'return' EXP? |
-    'continue'    |
-    'break'       
+    INITVAR             |
+    IF                  |
+    SWITCH              |
+    FOR                 |
+    WHILE               |
+    DOWHILE             |
+    ASSIGN          ';' |
+    CALLFUNC        ';' |
+    PRINT               |
+    'return' (EXP)? ';' |
+    'continue'      ';' |
+    'break'         ';'
 */
 void INSTRUCTION() : {
     Token t;
@@ -362,11 +362,11 @@ void VECTORTYPE2() : {} {
     COLORLBRK() (VECTORTYPE())? COLORRBRK()
 }
 /* TYPE ::=
-    RW_String  |
-    RW_int     |
-    RW_boolean |
-    RW_char    |
-    RW_double  
+    'String'  |
+    'int'     |
+    'boolean' |
+    'char'    |
+    'double'  
 */
 void TYPE() : {
     Token tp;
