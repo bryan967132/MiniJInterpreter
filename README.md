@@ -14,34 +14,31 @@ Implementa patrón de diseño interpreter.
 
 ## Gramática Libre del Contexto
 ```html
-<INIT> ::= <INSTRUCTIONS> <EOF>
+<INIT> ::= <INSTRUCTIONS> EOF
 
 <INSTSGLOBAL> ::= <INSTGLOBAL>*
 
 <INSTGLOBAL> ::=
     <CALLMAINFUNC> |
-    <DECLID>       |
-    <DECLFUNC>
+    <DECLFUNC>     
 
 <CALLMAINFUNC> ::= 'main' <CALLFUNC> ';'
 
 <CALLFUNC> ::= TK_id '(' <LISTARGS> ')'
 
-<LISTARGS> ::= (<EXP> (',' <EXP>)*)?
-
-<DECLID> ::= <TYPE> <INITIDS> ';'
+<INITVAR> ::= <DATATYPE> <INITIDS> ';'
 
 <INITIDS> ::= TK_id ('=' <EXP>)? (',' TK_id ('=' <EXP>)?)*
 
 <DECLFUNC> ::=
-    <TYPE> TK_id '(' <LISTPARAMS> ')' <ENV> |
+    <DATATYPE>   TK_id '(' <LISTPARAMS> ')' <ENV> |
     'void' TK_id '(' <LISTPARAMS> ')' <ENV>
 
-<LISTPARAMS> ::= (<TYPE> TK_id (',' <TYPE> TK_id)*)?
+<LISTPARAMS> ::= (<DATATYPE> TK_id (',' <DATATYPE> TK_id)*)?
 
-<IFSTRUCT> ::= 'if' '(' <EXP> ')' <ENV> ('else' (<IFSTRUCT> | <ENV>))?
+<IF> ::= 'if' '(' <EXP> ')' <ENV> ('else' (<IF> | <ENV>))?
 
-<SWITCHSTRUCT> ::= 'switch' '(' <EXP> ')' <ENVS>
+<SWITCH> ::= 'switch' '(' <EXP> ')' <ENVS>
 
 <ENVS> ::= '{' <CASESDEFAULT> '}'
 
@@ -53,63 +50,60 @@ Implementa patrón de diseño interpreter.
 
 <DEFAULT> ::= 'default' ':' (<ENV> | <INSTRUCTIONS>)
 
-<LOOPFOR> ::= 'for' '(' <ARGSFOR> ')' <ENV>
+<FOR> ::= 'for' '(' <ARGSFOR> ')' <ENV>
 
-<ARGSFOR> ::= (UPDATESFOR)? ';' (<EXP>)? ';' (UPDATESFOR)?
+<ARGSFOR> ::= (<INITIALIZEFOR>)? ';' (<EXP>)? ';' (<UPDATESFOR>)?
 
 <INITIALIZEFOR> ::=
-    <TYPE> <INITIDSFOR> |
-    <REASIGNS>
+    <DATATYPE> <INITIDSFOR> |
+    <REASIGNS>        
 
 <INITIDSFOR> ::= TK_id '=' <EXP> (',' TK_id '=' <EXP>)*
 
-<REASIGNS> ::= <REASIGN> (',' <REASIGN>)*
+<REASIGNS> ::= <ASSIGN> (',' <ASSIGN>)*
 
-<UPDATEFOR> ::=
-    <INCDEC>  |
-    <REASIGN> |
-    <ADDSUB>
+<UPDATESFOR> ::= <ASSIGN> (',' <ASSIGN>)*
 
-<LOOPWHILE> ::= 'while' '(' <EXP> ')' <ENV>
+<WHILE> ::= 'while' '(' <EXP> ')' <ENV>
 
-<LOOPDOWHILE> ::= 'do' <ENV> 'while' '(' <EXP> ')' ';'
+<DOWHILE> ::= 'do' <ENV> 'while' '(' <EXP> ')' ';'
 
-<REASIGN> ::= TK_id '=' <EXP>
+<ASSIGN> ::= TK_id (('=' | '+=' | '-=' | '*=' | '/=' | '%=') <EXP> | ('++' | '--'))
 
-<INCDEC> ::= TK_id ('++' | '--')
+<IDPOS> ::= TK_id <VECTORPOS>?
 
-<ADDSUB> ::= TK_id ('+=' | '-=') <EXP>
-
-<CAST> ::= <TYPE> '(' <EXP> ')'
-
-<PRINT> ::= 'print' '(' <EXP>? ')' ';'
+<PRINT> ::= '<PRINT>' '(' <EXP>? ')' ';'
 
 <ENV> ::= '{' <INSTRUCTIONS> '}'
 
 <INSTRUCTIONS> ::= <INSTRUCTION>*
 
 <INSTRUCTION> ::=
-    <DECLID>              |
-    <IFSTRUCT>            |
-    <SWITCHSTRUCT>        |
-    <LOOPFOR>             |
-    <LOOPWHILE>           |
-    <LOOPDOWHILE>         |
-    <REASIGN>         ';' |
-    <ADDSUB>          ';' |
-    <INCDEC>          ';' |
+    <INITVAR>             |
+    <IF>                  |
+    <SWITCH>              |
+    <FOR>                 |
+    <WHILE>               |
+    <DOWHILE>             |
+    <ASSIGN>          ';' |
     <CALLFUNC>        ';' |
     <PRINT>               |
     'return' (<EXP>)? ';' |
     'continue'        ';' |
-    'break'           ';'
+    'break'           ';' 
+
+<DATATYPE> ::= <TYPE> <VECTORTYPE>?
+
+<VECTORTYPE> ::= '[' <VECTORTYPE2>? ']'
+
+<VECTORTYPE2> ::= '[' <VECTORTYPE>? ']'
 
 <TYPE> ::=
-    RW_String  |
-    RW_int     |
-    RW_boolean |
-    RW_char    |
-    RW_double
+    'String'  |
+    'int'     |
+    'boolean' |
+    'char'    |
+    'double'  
 
 <EXP> ::= <opOr> ('?' <opOr> ':' <opOr>)?
 
@@ -117,41 +111,46 @@ Implementa patrón de diseño interpreter.
 
 <opAnd> ::= <opEqu> ('&&' <opEqu>)*
 
-<opEqu> ::=
-    <opCmp> ('==' <opCmp>)* |
-    <opCmp> ('!=' <opCmp>)*
+<opEqu> ::= <opCmp> (('==' | '!=') <opCmp>)*
 
-<opCmp> ::=
-    <opAdd> ('<=' <opAdd>)* |
-    <opAdd> ('>=' <opAdd>)* |
-    <opAdd> ('<' <opAdd>)*  |
-    <opAdd> ('>' <opAdd>)*
+<opCmp> ::= <opAdd> (('<=' | '>=' |'<' | '>') <opAdd>)*
 
-<opAdd> ::=
-    <opMult> ('+' <opMult>)* |
-    <opMult> ('-' <opMult>)*
+<opAdd> ::= <opMult> (('+' | '-') <opMult>)*
 
-<opMult> ::=
-    <unary> ('*' <unary>)* |
-    <unary> ('/' <unary>)*
+<opMult> ::= <unary> (('*' | '/' | '%') <unary>)*
 
 <unary> ::=
     '-' <unary> |
     '!' <unary> |
-    <primitive>
+    <primitive> 
 
 <primitive> ::=
-    <INCDEC>      |
-    <CALLFUNC>    |
+    <ACCESS>      |
     <CAST>        |
+    <NATIVEFUNC>  |
+    <VECTOR>      |
     TK_id         |
     TK_string     |
     TK_char       |
     TK_int        |
     TK_double     |
-    RW_true       |
-    RW_false      |
-    '(' <EXP> ')'
+    'true'        |
+    'false'       |
+    '(' <EXP> ')' 
+
+<ACCESS> ::= TK_id ('(' <LISTARGS> ')' | <VECTORPOS>? ('++' | '--')?)
+
+<LISTARGS> ::= (<EXP> (',' <EXP>)*)?
+
+<VECTORPOS> ::= '[' <EXP> ']' ('[' <EXP> ']')*
+
+<CAST> ::= <TYPE> '(' <EXP> ')'
+
+<NATIVEFUNC> ::=
+    'round' '(' <EXP> (',' <EXP>)? ')' |
+    'abs'   '(' <EXP> ')'              
+
+<VECTOR> ::= '[' (<EXP> (',' <EXP>)*)? ']'
 ```
 
 ## Instalación JavaCC
