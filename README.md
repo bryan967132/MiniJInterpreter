@@ -14,7 +14,8 @@ Implementa patrón de diseño interpreter.
 
 ## Gramática Libre del Contexto
 ```html
-<INIT> ::= <INSTRUCTIONS> EOF
+```html
+<INIT> ::= <INSTRUCTIONS> <EOF>
 
 <INSTSGLOBAL> ::= <INSTGLOBAL>*
 
@@ -26,15 +27,15 @@ Implementa patrón de diseño interpreter.
 
 <CALLFUNC> ::= TK_id '(' <LISTARGS> ')'
 
+<DECLFUNC> ::=
+    <DATATYPE> (TK_id '(' <LISTPARAMS> ')' <ENV> | <INITIDS> ';') |
+    'void'   TK_id '(' <LISTPARAMS> ')' <ENV>                 
+
+<LISTPARAMS> ::= (<DATATYPE> TK_id (',' <DATATYPE> TK_id)*)?
+
 <INITVAR> ::= <DATATYPE> <INITIDS> ';'
 
 <INITIDS> ::= TK_id ('=' <EXP>)? (',' TK_id ('=' <EXP>)?)*
-
-<DECLFUNC> ::=
-    <DATATYPE>   TK_id '(' <LISTPARAMS> ')' <ENV> |
-    'void' TK_id '(' <LISTPARAMS> ')' <ENV>
-
-<LISTPARAMS> ::= (<DATATYPE> TK_id (',' <DATATYPE> TK_id)*)?
 
 <IF> ::= 'if' '(' <EXP> ')' <ENV> ('else' (<IF> | <ENV>))?
 
@@ -42,9 +43,9 @@ Implementa patrón de diseño interpreter.
 
 <ENVS> ::= '{' <CASESDEFAULT> '}'
 
-<CASESDEFAULT> ::= (<CASES>)? (<DEFAULT>)?
+<CASESDEFAULT> ::= <CASES>? <DEFAULT>?
 
-<CASES> ::= (<CASE>)+
+<CASES> ::= <CASE>+
 
 <CASE> ::= 'case' <EXP> ':' (<ENV> | <INSTRUCTIONS>)
 
@@ -52,15 +53,15 @@ Implementa patrón de diseño interpreter.
 
 <FOR> ::= 'for' '(' <ARGSFOR> ')' <ENV>
 
-<ARGSFOR> ::= (<INITIALIZEFOR>)? ';' (<EXP>)? ';' (<UPDATESFOR>)?
+<ARGSFOR> ::= <INITIALIZEFOR>? ';' <EXP>? ';' <UPDATESFOR>?
 
 <INITIALIZEFOR> ::=
     <DATATYPE> <INITIDSFOR> |
-    <REASIGNS>        
+    <REASIGNS>            
 
 <INITIDSFOR> ::= TK_id '=' <EXP> (',' TK_id '=' <EXP>)*
 
-<REASIGNS> ::= <ASSIGN> (',' <ASSIGN>)*
+<REASIGNS> ::= <IDPOS> '=' <EXP> (',' <IDPOS> '=' <EXP>)*
 
 <UPDATESFOR> ::= <ASSIGN> (',' <ASSIGN>)*
 
@@ -72,7 +73,9 @@ Implementa patrón de diseño interpreter.
 
 <IDPOS> ::= TK_id <VECTORPOS>?
 
-<PRINT> ::= '<PRINT>' '(' <EXP>? ')' ';'
+<PRINT> ::=
+    'println' '(' <EXP>? ')' ';' |
+    'print'   '(' <EXP> ')' ';'  
 
 <ENV> ::= '{' <INSTRUCTIONS> '}'
 
@@ -89,8 +92,8 @@ Implementa patrón de diseño interpreter.
     <CALLFUNC>        ';' |
     <PRINT>               |
     'return' (<EXP>)? ';' |
-    'continue'        ';' |
-    'break'           ';' 
+    'continue'      ';' |
+    'break'         ';' 
 
 <DATATYPE> ::= <TYPE> <VECTORTYPE>?
 
@@ -134,8 +137,8 @@ Implementa patrón de diseño interpreter.
     TK_char       |
     TK_int        |
     TK_double     |
-    'true'        |
-    'false'       |
+    RW_true       |
+    RW_false      |
     '(' <EXP> ')' 
 
 <ACCESS> ::= TK_id ('(' <LISTARGS> ')' | <VECTORPOS>? ('++' | '--')?)
@@ -148,7 +151,7 @@ Implementa patrón de diseño interpreter.
 
 <NATIVEFUNC> ::=
     'round' '(' <EXP> (',' <EXP>)? ')' |
-    'abs'   '(' <EXP> ')'              
+    'abs'   '(' <EXP> ')'            
 
 <VECTOR> ::= '[' (<EXP> (',' <EXP>)*)? ']'
 ```
