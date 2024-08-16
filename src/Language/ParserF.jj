@@ -226,11 +226,11 @@ void SWITCH() : {
 void ENVS() : {} {
     COLORLBRC() CASESDEFAULT() COLORRBRC()
 }
-// CASESDEFAULT ::= (CASES)? (DEFAULT)?
+// CASESDEFAULT ::= CASES? DEFAULT?
 void CASESDEFAULT() : {} {
     (CASES())? (DEFAULT())?
 }
-// CASES ::= (CASE)+
+// CASES ::= CASE+
 void CASES() : {} {
     (CASE())+
 }
@@ -252,7 +252,7 @@ void FOR() : {
 } {
     f = <RW_for> {painter.RW2(f.beginColumn, f.image.length());} COLORLPAR() ARGSFOR() COLORRPAR() ENV()
 }
-// ARGSFOR ::= (INITIALIZEFOR)? ';' (EXP)? ';' (UPDATESFOR)?
+// ARGSFOR ::= INITIALIZEFOR? ';' EXP? ';' UPDATESFOR?
 void ARGSFOR() : {} {
     (INITIALIZEFOR())? <TK_semicolon> (EXP())? <TK_semicolon> (UPDATESFOR())?
 }
@@ -261,10 +261,18 @@ void ARGSFOR() : {} {
     REASIGNS            
 */
 void INITIALIZEFOR() : {} {
-    DATATYPE() REASIGNS() |
-    REASIGNS()            
+    DATATYPE() INITIDSFOR() |
+    REASIGNS()              
 }
-// REASIGNS ::= ASSIGN (',' ASSIGN)*
+// INITIDSFOR ::= TK_id '=' EXP (',' TK_id '=' EXP)*
+void INITIDSFOR() : {
+    Token id;
+} {
+    id = <TK_id> {painter.VARIABLE(id.beginColumn, id.image.length());} <TK_equ> EXP() (
+        <TK_comma> id = <TK_id> {painter.VARIABLE(id.beginColumn, id.image.length());} <TK_equ> EXP()
+    )*
+}
+// REASIGNS ::= IDPOS '=' EXP (',' IDPOS '=' EXP)*
 void REASIGNS() : {} {
     IDPOS() <TK_equ> EXP() (<TK_comma> IDPOS() <TK_equ> EXP())*
 }
@@ -294,7 +302,10 @@ void IDPOS() : {
 } {
     id = <TK_id> {painter.USEVARIABLE(id.beginColumn, id.image.length());} (VECTORPOS())?
 }
-// PRINT ::= 'PRINT' '(' EXP? ')' ';'
+/* PRINT ::=
+    'println' '(' EXP? ')' ';' |
+    'print'   '(' EXP ')' ';'  
+*/
 void PRINT() : {
     Token p;
 } {
@@ -331,7 +342,7 @@ void INSTRUCTIONS() : {} {
     PRINT               |
     'return' (EXP)? ';' |
     'continue'      ';' |
-    'break'         ';'
+    'break'         ';' 
 */
 void INSTRUCTION() : {
     Token t;
@@ -470,7 +481,8 @@ void VECTORPOS() : {} {
 void CAST() : {} {
     TYPE() COLORLPAR() EXP() COLORRPAR()
 
-}/* NATIVEFUNC ::=
+}
+/* NATIVEFUNC ::=
     'round' '(' EXP (',' EXP)? ')' |
     'abs'   '(' EXP ')'            
 */

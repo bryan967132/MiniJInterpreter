@@ -27,7 +27,7 @@ public class Parser implements ParserConstants {
     throw new Error("Missing return statement in function");
 }
 
-// INIT := INSTRUCTIONS EOF
+// INIT ::= INSTRUCTIONS EOF
   final public ArrayList<Instruction> INIT() throws ParseException {ArrayList<Instruction> ins;
     ins = INSTSGLOBAL();
     jj_consume_token(0);
@@ -120,64 +120,9 @@ Token t = getNextToken();
     throw new Error("Missing return statement in function");
 }
 
-// INITVAR ::= DATATYPE INITIDS ';'
-  final public Instruction INITVAR() throws ParseException {DataType t;
-    ArrayList<IDValue> arr;
-    t = DATATYPE();
-    arr = INITIDS();
-    jj_consume_token(TK_semicolon);
-{if ("" != null) return new InitVar(token.beginLine, token.beginColumn, arr, t);}
-    throw new Error("Missing return statement in function");
-}
-
-// INITIDS ::= TK_id ('=' EXP)? (',' TK_id ('=' EXP)?)*
-  final public ArrayList<IDValue> INITIDS() throws ParseException {Token id;
-    Expression exp = null;
-    ArrayList<IDValue> l = new ArrayList<>();
-    id = jj_consume_token(TK_id);
-    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-    case TK_equ:{
-      jj_consume_token(TK_equ);
-      exp = EXP();
-      break;
-      }
-    default:
-      jj_la1[2] = jj_gen;
-      ;
-    }
-l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));
-    label_2:
-    while (true) {
-      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case TK_comma:{
-        ;
-        break;
-        }
-      default:
-        jj_la1[3] = jj_gen;
-        break label_2;
-      }
-      jj_consume_token(TK_comma);
-      id = jj_consume_token(TK_id);
-      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
-      case TK_equ:{
-        jj_consume_token(TK_equ);
-        exp = EXP();
-        break;
-        }
-      default:
-        jj_la1[4] = jj_gen;
-        ;
-      }
-l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));
-    }
-{if ("" != null) return l;}
-    throw new Error("Missing return statement in function");
-}
-
 /* DECLFUNC ::=
-    DATATYPE   TK_id '(' LISTPARAMS ')' ENV |
-    'void' TK_id '(' LISTPARAMS ')' ENV
+    DATATYPE (TK_id '(' LISTPARAMS ')' ENV | INITIDS ';') |
+    'void'   TK_id '(' LISTPARAMS ')' ENV                 
 */
   final public Instruction DECLFUNC() throws ParseException {Token n;
     DataType t;
@@ -208,7 +153,7 @@ l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));
           break;
           }
         default:
-          jj_la1[5] = jj_gen;
+          jj_la1[2] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -226,7 +171,7 @@ l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));
       break;
       }
     default:
-      jj_la1[6] = jj_gen;
+      jj_la1[3] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -246,7 +191,7 @@ l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));
       t = DATATYPE();
       id = jj_consume_token(TK_id);
 l.add(new Parameter(id.beginLine, id.beginColumn, id.image, t));
-      label_3:
+      label_2:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
         case TK_comma:{
@@ -254,8 +199,8 @@ l.add(new Parameter(id.beginLine, id.beginColumn, id.image, t));
           break;
           }
         default:
-          jj_la1[7] = jj_gen;
-          break label_3;
+          jj_la1[4] = jj_gen;
+          break label_2;
         }
         jj_consume_token(TK_comma);
         t = DATATYPE();
@@ -265,8 +210,63 @@ l.add(new Parameter(id.beginLine, id.beginColumn, id.image, t));
       break;
       }
     default:
-      jj_la1[8] = jj_gen;
+      jj_la1[5] = jj_gen;
       ;
+    }
+{if ("" != null) return l;}
+    throw new Error("Missing return statement in function");
+}
+
+// INITVAR ::= DATATYPE INITIDS ';'
+  final public Instruction INITVAR() throws ParseException {DataType t;
+    ArrayList<IDValue> arr;
+    t = DATATYPE();
+    arr = INITIDS();
+    jj_consume_token(TK_semicolon);
+{if ("" != null) return new InitVar(token.beginLine, token.beginColumn, arr, t);}
+    throw new Error("Missing return statement in function");
+}
+
+// INITIDS ::= TK_id ('=' EXP)? (',' TK_id ('=' EXP)?)*
+  final public ArrayList<IDValue> INITIDS() throws ParseException {Token id;
+    Expression exp = null;
+    ArrayList<IDValue> l = new ArrayList<>();
+    id = jj_consume_token(TK_id);
+    switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+    case TK_equ:{
+      jj_consume_token(TK_equ);
+      exp = EXP();
+      break;
+      }
+    default:
+      jj_la1[6] = jj_gen;
+      ;
+    }
+l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));
+    label_3:
+    while (true) {
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case TK_comma:{
+        ;
+        break;
+        }
+      default:
+        jj_la1[7] = jj_gen;
+        break label_3;
+      }
+      jj_consume_token(TK_comma);
+      id = jj_consume_token(TK_id);
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case TK_equ:{
+        jj_consume_token(TK_equ);
+        exp = EXP();
+        break;
+        }
+      default:
+        jj_la1[8] = jj_gen;
+        ;
+      }
+l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));
     }
 {if ("" != null) return l;}
     throw new Error("Missing return statement in function");
@@ -331,7 +331,7 @@ l.add(new Parameter(id.beginLine, id.beginColumn, id.image, t));
     throw new Error("Missing return statement in function");
 }
 
-// CASESDEFAULT ::= (CASES)? (DEFAULT)?
+// CASESDEFAULT ::= CASES? DEFAULT?
   final public Object[] CASESDEFAULT() throws ParseException {ArrayList<Sentence> cases = null;
     Sentence default_ = null;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -356,7 +356,7 @@ l.add(new Parameter(id.beginLine, id.beginColumn, id.image, t));
     throw new Error("Missing return statement in function");
 }
 
-// CASES ::= (CASE)+
+// CASES ::= CASE+
   final public ArrayList<Sentence> CASES() throws ParseException {Sentence c;
     ArrayList<Sentence> cases = new ArrayList<>();
     label_4:
@@ -436,7 +436,7 @@ default_ = new Block(d.beginLine, d.beginColumn, i);
     throw new Error("Missing return statement in function");
 }
 
-// ARGSFOR ::= (UPDATESFOR)? ';' (EXP)? ';' (UPDATESFOR)?
+// ARGSFOR ::= INITIALIZEFOR? ';' EXP? ';' UPDATESFOR?
   final public Object[] ARGSFOR() throws ParseException {InitializeFor i = null;
     Expression e = null;
     ArrayList<Sentence> u = null;
@@ -497,7 +497,7 @@ default_ = new Block(d.beginLine, d.beginColumn, i);
 
 /* INITIALIZEFOR ::=
     DATATYPE INITIDSFOR |
-    REASIGNS        
+    REASIGNS            
 */
   final public InitializeFor INITIALIZEFOR() throws ParseException {DataType t;
     ArrayList<IDValue> i;
@@ -555,7 +555,7 @@ l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));
     throw new Error("Missing return statement in function");
 }
 
-// REASIGNS ::= ASSIGN (',' ASSIGN)*
+// REASIGNS ::= IDPOS '=' EXP (',' IDPOS '=' EXP)*
   final public ArrayList<Instruction> REASIGNS() throws ParseException {IDPos id;
     Expression e;
     ArrayList<Instruction> l = new ArrayList<>();
@@ -727,7 +727,10 @@ l.add(up);
     throw new Error("Missing return statement in function");
 }
 
-// PRINT ::= 'PRINT' '(' EXP? ')' ';'
+/* PRINT ::=
+    'println' '(' EXP? ')' ';' |
+    'print'   '(' EXP ')' ';'  
+*/
   final public Instruction PRINT() throws ParseException {Token p;
     Expression exp = null;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -844,13 +847,11 @@ Token t = getNextToken();
     WHILE               |
     DOWHILE             |
     ASSIGN          ';' |
-    ADDSUB          ';' |
-    INCDEC          ';' |
     CALLFUNC        ';' |
     PRINT               |
     'return' (EXP)? ';' |
     'continue'      ';' |
-    'break'         ';'
+    'break'         ';' 
 */
   final public Sentence INSTRUCTION() throws ParseException {Sentence ins;
     Token trn;
@@ -1017,11 +1018,11 @@ Token t = getNextToken();
 }
 
 /* TYPE ::=
-    RW_String  |
-    RW_int     |
-    RW_boolean |
-    RW_char    |
-    RW_double  
+    'String'  |
+    'int'     |
+    'boolean' |
+    'char'    |
+    'double'  
 */
   final public Type TYPE() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -1580,7 +1581,7 @@ l.add(e);
     throw new Error("Missing return statement in function");
 }
 
-// CAST ::= TYPE TK_lpar EXP TK_rpar
+// CAST ::= TYPE '(' EXP ')'
   final public Expression CAST() throws ParseException {Token c;
     Type t;
     Expression exp;
@@ -1736,7 +1737,14 @@ v.add(e);
     return false;
   }
 
-  private boolean jj_3R_ACCESS_646_13_28()
+  private boolean jj_3_1()
+ {
+    if (jj_scan_token(TK_id)) return true;
+    if (jj_scan_token(TK_lpar)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_ACCESS_647_13_28()
  {
     Token xsp;
     xsp = jj_scanpos;
@@ -1744,13 +1752,6 @@ v.add(e);
     jj_scanpos = xsp;
     if (jj_scan_token(32)) return true;
     }
-    return false;
-  }
-
-  private boolean jj_3_1()
- {
-    if (jj_scan_token(TK_id)) return true;
-    if (jj_scan_token(TK_lpar)) return true;
     return false;
   }
 
@@ -1769,9 +1770,19 @@ v.add(e);
     return false;
   }
 
-  private boolean jj_3R_ACCESS_645_10_27()
+  private boolean jj_3R_ACCESS_646_10_27()
  {
-    if (jj_3R_VECTORPOS_667_5_29()) return true;
+    if (jj_3R_VECTORPOS_668_5_29()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_ACCESS_646_9_25()
+ {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_ACCESS_646_10_27()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_ACCESS_647_13_28()) jj_scanpos = xsp;
     return false;
   }
 
@@ -1784,17 +1795,7 @@ v.add(e);
     return false;
   }
 
-  private boolean jj_3R_ACCESS_645_9_25()
- {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_ACCESS_645_10_27()) jj_scanpos = xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_ACCESS_646_13_28()) jj_scanpos = xsp;
-    return false;
-  }
-
-  private boolean jj_3R_ACCESS_644_9_24()
+  private boolean jj_3R_ACCESS_645_9_24()
  {
     if (jj_scan_token(TK_lpar)) return true;
     return false;
@@ -1802,13 +1803,25 @@ v.add(e);
 
   private boolean jj_3_3()
  {
-    if (jj_3R_ACCESS_643_5_19()) return true;
+    if (jj_3R_ACCESS_644_5_19()) return true;
     return false;
   }
 
-  private boolean jj_3R_VECTORPOS_667_5_29()
+  private boolean jj_3R_VECTORPOS_668_5_29()
  {
     if (jj_scan_token(TK_lbrk)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_ACCESS_644_5_19()
+ {
+    if (jj_scan_token(TK_id)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_ACCESS_645_9_24()) {
+    jj_scanpos = xsp;
+    if (jj_3R_ACCESS_646_9_25()) return true;
+    }
     return false;
   }
 
@@ -1823,18 +1836,6 @@ v.add(e);
     return false;
   }
 
-  private boolean jj_3R_ACCESS_643_5_19()
- {
-    if (jj_scan_token(TK_id)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_ACCESS_644_9_24()) {
-    jj_scanpos = xsp;
-    if (jj_3R_ACCESS_645_9_25()) return true;
-    }
-    return false;
-  }
-
   private boolean jj_3_2()
  {
     if (jj_3R_ASSIGN_400_5_18()) return true;
@@ -1843,7 +1844,7 @@ v.add(e);
 
   private boolean jj_3R_IDPOS_420_19_26()
  {
-    if (jj_3R_VECTORPOS_667_5_29()) return true;
+    if (jj_3R_VECTORPOS_668_5_29()) return true;
     return false;
   }
 
@@ -1868,10 +1869,10 @@ v.add(e);
 	   jj_la1_init_2();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0xfe,0xfe,0x0,0x0,0x0,0x40000000,0xfc,0x0,0xf8,0x100,0x200,0x4000,0x8000,0x4000,0x0,0x0,0x400000f8,0x7e9800f8,0x40000000,0x400000f8,0x0,0x0,0x0,0x0,0x80000000,0x80000000,0x0,0x7e9800f8,0x600000,0x40673df8,0x7e9800f8,0x3df8,0x40670000,0x0,0x0,0x0,0xf8,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7e9800f8,0x3e9800f8,0x0,0x80000000,0x80000000,0x0,0x0,0x7e9800f8,0x0,0x0,0x2800000,0x0,0x7e9800f8,};
+	   jj_la1_0 = new int[] {0xfe,0xfe,0x40000000,0xfc,0x0,0xf8,0x0,0x0,0x0,0x100,0x200,0x4000,0x8000,0x4000,0x0,0x0,0x400000f8,0x7e9800f8,0x40000000,0x400000f8,0x0,0x0,0x0,0x0,0x80000000,0x80000000,0x0,0x7e9800f8,0x600000,0x40673df8,0x7e9800f8,0x3df8,0x40670000,0x0,0x0,0x0,0xf8,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7e9800f8,0x3e9800f8,0x0,0x80000000,0x80000000,0x0,0x0,0x7e9800f8,0x0,0x0,0x2800000,0x0,0x7e9800f8,};
 	}
 	private static void jj_la1_init_1() {
-	   jj_la1_1 = new int[] {0x0,0x0,0x8000,0x10000000,0x8000,0x0,0x0,0x10000000,0x0,0x800000,0x0,0x0,0x0,0x0,0x800000,0x800000,0x0,0x2300080,0x0,0x0,0x10000000,0x10000000,0x10000000,0x3e,0x1,0x803f,0x2000000,0x2300080,0x0,0x0,0x2300080,0x0,0x0,0x2000000,0x2000000,0x2000000,0x0,0x80000000,0x80000,0x40000,0x1800,0x1800,0x36000,0x36000,0xc0,0xc0,0x700,0x700,0x8000000,0x2300080,0x2200000,0x2000000,0x1,0x1,0x200000,0x10000000,0x2300080,0x2000000,0x10000000,0x0,0x10000000,0x2300080,};
+	   jj_la1_1 = new int[] {0x0,0x0,0x0,0x0,0x10000000,0x0,0x8000,0x10000000,0x8000,0x800000,0x0,0x0,0x0,0x0,0x800000,0x800000,0x0,0x2300080,0x0,0x0,0x10000000,0x10000000,0x10000000,0x3e,0x1,0x803f,0x2000000,0x2300080,0x0,0x0,0x2300080,0x0,0x0,0x2000000,0x2000000,0x2000000,0x0,0x80000000,0x80000,0x40000,0x1800,0x1800,0x36000,0x36000,0xc0,0xc0,0x700,0x700,0x8000000,0x2300080,0x2200000,0x2000000,0x1,0x1,0x200000,0x10000000,0x2300080,0x2000000,0x10000000,0x0,0x10000000,0x2300080,};
 	}
 	private static void jj_la1_init_2() {
 	   jj_la1_2 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
