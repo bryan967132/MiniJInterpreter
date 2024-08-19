@@ -388,49 +388,51 @@ void TYPE() : {
     tp = <RW_char>    {painter.RW1(tp.beginColumn, tp.image.length());} |
     tp = <RW_double>  {painter.RW1(tp.beginColumn, tp.image.length());} 
 }
-// EXP ::= opOr ('?' opOr ':' opOr)?
+// EXP ::= EXP8 ('?' EXP8 ':' EXP8)?
 void EXP() : {
     Token t;
 } {
-    opOr() (t = <TK_question> {painter.SYMBS1(t.beginColumn, t.image.length());} opOr() t = <TK_colon> {painter.SYMBS1(t.beginColumn, t.image.length());} opOr())?
+    EXP8() (t = <TK_question> {painter.SYMBS1(t.beginColumn, t.image.length());} EXP8() t = <TK_colon> {painter.SYMBS1(t.beginColumn, t.image.length());} EXP8())?
 }
-// opOr ::= opAnd ('||' opAnd)*
-void opOr() : {} {
-    opAnd() (<TK_or> opAnd())*
+// EXP8 ::= EXP7 ('||' EXP7)*
+void EXP8() : {} {
+    EXP7() (<TK_or> EXP7())*
 }
-// opAnd ::= opEqu ('&&' opEqu)*
-void opAnd() : {} {
-    opEqu() (<TK_and> opEqu())*
+// EXP7 ::= EXP6 ('&&' EXP6)*
+void EXP7() : {} {
+    EXP6() (<TK_and> EXP6())*
 }
-// opEqu ::= opCmp (('==' | '!=') opCmp)*
-void opEqu() : {} {
-    opCmp() ((<TK_equequ> | <TK_notequ>) opCmp())*
+// EXP6 ::= '!'? EXP5
+void EXP6() : {} {
+    (<TK_not>)? EXP5()
 }
-// opCmp ::= opAdd (('<=' | '>=' |'<' | '>') opAdd)*
-void opCmp() : {} {
-    opAdd() ((<TK_lessequ> | <TK_moreequ> | <TK_less> | <TK_more>) opAdd())*
+// EXP5 ::= EXP4 (('==' | '!=') EXP4)*
+void EXP5() : {} {
+    EXP4() ((<TK_equequ> | <TK_notequ>) EXP4())*
 }
-// opAdd ::= opMult (('+' | '-') opMult)*
-void opAdd() : {} {
-    opMult() ((<TK_plus> | <TK_minus>) opMult())*
+// EXP4 ::= EXP3 (('<=' | '>=' |'<' | '>') EXP3)*
+void EXP4() : {} {
+    EXP3() ((<TK_lessequ> | <TK_moreequ> | <TK_less> | <TK_more>) EXP3())*
 }
-// opMult ::= unary (('*' | '/' | '%') unary)*
-void opMult() : {} {
-    unary() ((<TK_mult> | <TK_div> | <TK_mod>) unary())*
+// EXP3 ::= EXP2 (('+' | '-') EXP2)*
+void EXP3() : {} {
+    EXP2() ((<TK_plus> | <TK_minus>) EXP2())*
 }
-/* unary ::=
-    '-' unary |
-    '!' unary |
-    primitive 
+// EXP2 ::= EXP1 (('*' | '/' | '%') EXP1)*
+void EXP2() : {} {
+    EXP1() ((<TK_mult> | <TK_div> | <TK_mod>) EXP1())*
+}
+/* EXP1 ::=
+    '-' EXP1 |
+    PRIMITIVE 
 */
-void unary() : {
+void EXP1() : {
     Token id;
 } {
-    <TK_minus> unary() |
-    <TK_not>   unary() |
-    primitive() (<TK_dot> id = <RW_size> {painter.ATTRIB(id.beginColumn, id.image.length());})?
+    <TK_minus> EXP1() |
+    PRIMITIVE() (<TK_dot> id = <RW_size> {painter.ATTRIB(id.beginColumn, id.image.length());})?
 }
-/* primitive ::=
+/* PRIMITIVE ::=
     ACCESS      |
     CAST        |
     NATIVEFUNC  |
@@ -444,7 +446,7 @@ void unary() : {
     RW_false    |
     '(' EXP ')' 
 */
-void primitive() : {
+void PRIMITIVE() : {
     Token tr;
 } {
     LOOKAHEAD(2) ACCESS()         |

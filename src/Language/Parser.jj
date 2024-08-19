@@ -521,89 +521,87 @@ Type TYPE() : {} {
     <RW_char>    {return Type.CHAR;   } |
     <RW_double>  {return Type.DOUBLE; } 
 }
-// EXP ::= opOr ('?' opOr ':' opOr)?
+// EXP ::= EXP8 ('?' EXP8 ':' EXP8)?
 Expression EXP() : {
     Expression c, y, n;
 } {
-    c = opOr() (
-        <TK_question> y = opOr() <TK_colon> n = opOr() {c = new Ternary(c.line, c.column, c, y, n);}
+    c = EXP8() (
+        <TK_question> y = EXP8() <TK_colon> n = EXP8() {c = new Ternary(c.line, c.column, c, y, n);}
     )? {return c;}
 }
-// opOr ::= opAnd ('||' opAnd)*
-Expression opOr() : {
+// EXP8 ::= EXP7 ('||' EXP7)*
+Expression EXP8() : {
     Token s;
     Expression e1, e2;
 } {
-    e1 = opAnd() (
-        s = <TK_or> e2 = opAnd() {e1 = new Logic(s.beginLine, s.beginColumn, e1, s.image, e2);}
+    e1 = EXP7() (
+        s = <TK_or> e2 = EXP7() {e1 = new Logic(s.beginLine, s.beginColumn, e1, s.image, e2);}
     )* {return e1;}
 }
-// opAnd ::= opEqu ('&&' opEqu)*
-Expression opAnd() : {
+// EXP7 ::= EXP6 ('&&' EXP6)*
+Expression EXP7() : {
     Token s;
     Expression e1, e2;
 } {
-    e1 = opEqu() (
-        s = <TK_and> e2 = opEqu() {e1 = new Logic(s.beginLine, s.beginColumn, e1, s.image, e2);}
+    e1 = EXP6() (
+        s = <TK_and> e2 = EXP6() {e1 = new Logic(s.beginLine, s.beginColumn, e1, s.image, e2);}
     )* {return e1;}
 }
-// opEqu ::= opCmp (('==' | '!=') opCmp)*
-Expression opEqu() : {
+// EXP6 ::= '!'? EXP5
+Expression EXP6() : {
+    Token s = null;
+    Expression exp;
+} {
+    (s = <TK_not>)? exp = EXP5() {return s != null ? new Logic(s.beginLine, s.beginColumn, null, s.image, exp) : exp;}
+}
+// EXP5 ::= EXP4 (('==' | '!=') EXP4)*
+Expression EXP5() : {
     Token s;
     Expression e1, e2;
 } {
-    e1 = opCmp() (
-        s = <TK_equequ> e2 = opCmp() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} |
-        s = <TK_notequ> e2 = opCmp() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} 
+    e1 = EXP4() (
+        (s = <TK_equequ> | s = <TK_notequ>) e2 = EXP4() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} 
     )* {return e1;}
 }
-// opCmp ::= opAdd (('<=' | '>=' |'<' | '>') opAdd)*
-Expression opCmp() : {
+// EXP4 ::= EXP3 (('<=' | '>=' |'<' | '>') EXP3)*
+Expression EXP4() : {
     Token s;
     Expression e1, e2;
 } {
-    e1 = opAdd() (
-        s = <TK_lessequ> e2 = opAdd() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} |
-        s = <TK_moreequ> e2 = opAdd() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} |
-        s = <TK_less>    e2 = opAdd() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} |
-        s = <TK_more>    e2 = opAdd() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} 
+    e1 = EXP3() (
+        (s = <TK_lessequ> | s = <TK_moreequ> | s = <TK_less> | s = <TK_more>) e2 = EXP3() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} 
     )* {return e1;}
 }
-// opAdd ::= opMult (('+' | '-') opMult)*
-Expression opAdd() : {
+// EXP3 ::= EXP2 (('+' | '-') EXP2)*
+Expression EXP3() : {
     Token s;
     Expression e1, e2;
 } {
-    e1 = opMult() (
-        s = <TK_plus>  e2 = opMult() {e1 = new Arithmetic(e1.line, e1.column, e1, s.image, e2);} |
-        s = <TK_minus> e2 = opMult() {e1 = new Arithmetic(e1.line, e1.column, e1, s.image, e2);} 
+    e1 = EXP2() (
+        (s = <TK_plus> | s = <TK_minus>) e2 = EXP2() {e1 = new Arithmetic(e1.line, e1.column, e1, s.image, e2);} 
     )* {return e1;}
 }
-// opMult ::= unary (('*' | '/' | '%') unary)*
-Expression opMult() : {
+// EXP2 ::= EXP1 (('*' | '/' | '%') EXP1)*
+Expression EXP2() : {
     Token s;
     Expression e1, e2;
 } {
-    e1 = unary() (
-        s = <TK_mult> e2 = unary() {e1 = new Arithmetic(e1.line, e1.column, e1, s.image, e2);} |
-        s = <TK_div>  e2 = unary() {e1 = new Arithmetic(e1.line, e1.column, e1, s.image, e2);} |
-        s = <TK_mod>  e2 = unary() {e1 = new Arithmetic(e1.line, e1.column, e1, s.image, e2);} 
+    e1 = EXP1() (
+        (s = <TK_mult> | s = <TK_div> | s = <TK_mod>) e2 = EXP1() {e1 = new Arithmetic(e1.line, e1.column, e1, s.image, e2);} 
     )* {return e1;}
 }
-/* unary ::=
-    '-' unary |
-    '!' unary |
-    primitive 
+/* EXP1 ::=
+    '-' EXP1 |
+    PRIMITIVE 
 */
-Expression unary() : {
+Expression EXP1() : {
     Token s;
     Expression exp;
 } {
-    s = <TK_minus> exp = unary() {return new Arithmetic(s.beginLine, s.beginColumn, null, s.image, exp);} |
-    s = <TK_not>   exp = unary() {return new Logic(s.beginLine, s.beginColumn, null, s.image, exp);     } |
-    exp = primitive() (<TK_dot> s = <RW_size> {exp = new Native(exp.line, exp.column, s.image, exp);})? {return exp;} 
+    s = <TK_minus> exp = EXP1() {return new Arithmetic(s.beginLine, s.beginColumn, null, s.image, exp);} |
+    exp = PRIMITIVE() (<TK_dot> s = <RW_size> {exp = new Native(exp.line, exp.column, s.image, exp);})? {return exp;} 
 }
-/* primitive ::=
+/* PRIMITIVE ::=
     ACCESS      |
     CAST        |
     NATIVEFUNC  |
@@ -617,7 +615,7 @@ Expression unary() : {
     RW_false    |
     '(' EXP ')' 
 */
-Expression primitive() : {
+Expression PRIMITIVE() : {
     Token p;
     Expression exp;
 } {
