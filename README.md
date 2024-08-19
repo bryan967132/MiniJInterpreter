@@ -108,26 +108,27 @@ Implementa patrón de diseño interpreter.
     'char'    |
     'double'  
 
-<EXP> ::= <opOr> ('?' <opOr> ':' <opOr>)?
+<EXP> ::= <EXP8> ('?' <EXP8> ':' <EXP8>)?
 
-<opOr> ::= <opAnd> ('||' <opAnd>)*
+<EXP8> ::= <EXP7> ('||' <EXP7>)*
 
-<opAnd> ::= <opEqu> ('&&' <opEqu>)*
+<EXP7> ::= <EXP6> ('&&' <EXP6>)*
 
-<opEqu> ::= <opCmp> (('==' | '!=') <opCmp>)*
+<EXP6> ::= '!'? <EXP5>
 
-<opCmp> ::= <opAdd> (('<=' | '>=' |'<' | '>') <opAdd>)*
+<EXP5> ::= <EXP4> (('==' | '!=') <EXP4>)*
 
-<opAdd> ::= <opMult> (('+' | '-') <opMult>)*
+<EXP4> ::= <EXP3> (('<=' | '>=' |'<' | '>') <EXP3>)*
 
-<opMult> ::= <unary> (('*' | '/' | '%') <unary>)*
+<EXP3> ::= <EXP2> (('+' | '-') <EXP2>)*
 
-<unary> ::=
-    '-' <unary> |
-    '!' <unary> |
-    <primitive> 
+<EXP2> ::= <EXP1> (('*' | '/' | '%') <EXP1>)*
 
-<primitive> ::=
+<EXP1> ::=
+    '-' <EXP1> |
+    <PRIMITIVE> 
+
+<PRIMITIVE> ::=
     <ACCESS>      |
     <CAST>        |
     <NATIVEFUNC>  |
