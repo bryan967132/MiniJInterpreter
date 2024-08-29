@@ -29,7 +29,7 @@ Implementa patrón de diseño interpreter.
 
 <DECLFUNC> ::=
     <DATATYPE> (TK_id '(' <LISTPARAMS> ')' <ENV> | <INITIDS> ';') |
-    'void'   TK_id '(' <LISTPARAMS> ')' <ENV>                 
+    'void'   TK_id '(' <LISTPARAMS> ')' <ENV>                     
 
 <LISTPARAMS> ::= (<DATATYPE> TK_id (',' <DATATYPE> TK_id)*)?
 
@@ -57,7 +57,7 @@ Implementa patrón de diseño interpreter.
 
 <INITIALIZEFOR> ::=
     <DATATYPE> <INITIDSFOR> |
-    <REASIGNS>            
+    <REASIGNS>              
 
 <INITIDSFOR> ::= TK_id '=' <EXP> (',' TK_id '=' <EXP>)*
 
@@ -82,16 +82,16 @@ Implementa patrón de diseño interpreter.
 <INSTRUCTIONS> ::= <INSTRUCTION>*
 
 <INSTRUCTION> ::=
-    <INITVAR>             |
-    <IF>                  |
-    <SWITCH>              |
-    <FOR>                 |
-    <WHILE>               |
-    <DOWHILE>             |
-    <ASSIGN>          ';' |
-    <CALLFUNC>        ';' |
-    <PRINT>               |
-    'return' (<EXP>)? ';' |
+    <INITVAR>           |
+    <IF>                |
+    <SWITCH>            |
+    <FOR>               |
+    <WHILE>             |
+    <DOWHILE>           |
+    <ASSIGN>        ';' |
+    <CALLFUNC>      ';' |
+    <PRINT>             |
+    'return' <EXP>? ';' |
     'continue'      ';' |
     'break'         ';' 
 
@@ -125,7 +125,7 @@ Implementa patrón de diseño interpreter.
 <EXP2> ::= <EXP1> (('*' | '/' | '%') <EXP1>)*
 
 <EXP1> ::=
-    '-' <EXP1> |
+    '-' <EXP1>  |
     <PRIMITIVE> 
 
 <PRIMITIVE> ::=
