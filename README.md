@@ -14,7 +14,6 @@ Implementa patrón de diseño interpreter.
 
 ## Gramática Libre del Contexto
 ```html
-```html
 <INIT> ::= <INSTRUCTIONS> <EOF>
 
 <INSTSGLOBAL> ::= <INSTGLOBAL>*
@@ -152,7 +151,7 @@ Implementa patrón de diseño interpreter.
 
 <NATIVEFUNC> ::=
     'round' '(' <EXP> (',' <EXP>)? ')' |
-    'abs'   '(' <EXP> ')'            
+    'abs'   '(' <EXP> ')'              
 
 <VECTOR> ::= '[' (<EXP> (',' <EXP>)*)? ']'
 ```
