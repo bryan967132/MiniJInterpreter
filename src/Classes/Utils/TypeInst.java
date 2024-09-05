@@ -2,7 +2,7 @@ package Classes.Utils;
 public enum TypeInst {
     PRINT    ,
     INITVAR  ,
-    ASIGN    ,
+    ASSIGN    ,
     INITFUNC ,
     MAIN     ,
     PLUSC    ,
