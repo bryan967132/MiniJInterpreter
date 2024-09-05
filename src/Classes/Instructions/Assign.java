@@ -12,7 +12,7 @@ public class Assign extends Instruction {
     private Expression value;
     private ArrayList<Expression> pos;
     public Assign(int line, int column, IDPos idPos, Expression value) {
-        super(line, column, TypeInst.ASIGN);
+        super(line, column, TypeInst.ASSIGN);
         this.id = idPos.id;
         this.pos = idPos.pos;
         this.value = value;
