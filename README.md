@@ -176,4 +176,8 @@ Repositorio: [PseudoParser](https://github.com/bryan967132/PseudoParser)
 
 ## Traductor a C3D con JFlex y CUP
 Usuario: [bryan967132](https://github.com/bryan967132)  
-Repositorio: [MiniJCompiler](https://github.com/bryan967132/MiniJCompiler)
+Repositorio: [MiniJC3D](https://github.com/bryan967132/MiniJC3D)
+
+## Traductor a Risc-V con JFlex y CUP
+Usuario: [bryan967132](https://github.com/bryan967132)  
+Repositorio: [MiniJRiscV](https://github.com/bryan967132/MiniJRiscV)
