@@ -251,11 +251,11 @@ ArrayList<IDValue> INITIDS() : {
     )* {return l;}
 }
 // IF ::= 'if' '(' EXP ')' ENV ('else' (IF | ENV))?
-Sentence IF() : {
+Statement IF() : {
     Token r;
     Expression cn;
     Block b1;
-    Sentence b2 = null;
+    Statement b2 = null;
 } {
     r = <RW_if> <TK_lpar> cn = EXP() <TK_rpar> b1 = ENV()
     (
@@ -265,7 +265,7 @@ Sentence IF() : {
     )? {return new If(r.beginLine, r.beginColumn, cn, b1, b2);}
 }
 // SWITCH ::= 'switch' '(' EXP ')' ENVS
-Sentence SWITCH() : {
+Statement SWITCH() : {
     Token s;
     Expression exp;
     Object[] b;
@@ -280,25 +280,25 @@ Object[] ENVS() : {
 }
 // CASESDEFAULT ::= CASES? DEFAULT?
 Object[] CASESDEFAULT() : {
-    ArrayList<Sentence> cases = null;
-    Sentence default_ = null;
+    ArrayList<Statement> cases = null;
+    Statement default_ = null;
 } {
     (cases = CASES())? (default_ = DEFAULT())? {return new Object[] {cases, default_};}
 }
 // CASES ::= CASE+
-ArrayList<Sentence> CASES() : {
-    Sentence c;
-    ArrayList<Sentence> cases = new ArrayList<>();
+ArrayList<Statement> CASES() : {
+    Statement c;
+    ArrayList<Statement> cases = new ArrayList<>();
 } {
     (c = CASE() {cases.add(c);})+ {return cases;}
 }
 // CASE ::= 'case' EXP ':' (ENV | INSTRUCTIONS)
-Sentence CASE() : {
+Statement CASE() : {
     Token c;
     Block b;
-    ArrayList<Sentence> i;
+    ArrayList<Statement> i;
     Expression exp;
-    Sentence case_;
+    Statement case_;
 } {
     c = <RW_case> exp = EXP() <TK_colon>
     (
@@ -310,7 +310,7 @@ Sentence CASE() : {
 Block DEFAULT() : {
     Token d;
     Block b;
-    ArrayList<Sentence> i;
+    ArrayList<Statement> i;
     Block default_;
 } {
     d = <RW_default> <TK_colon>
@@ -320,18 +320,18 @@ Block DEFAULT() : {
     ) {return default_;}
 }
 // FOR ::= 'for' '(' ARGSFOR ')' ENV
-Sentence FOR() : {
+Statement FOR() : {
     Token f;
     Object[] args;
     Block b;
 } {
-    f = <RW_for> <TK_lpar> args = ARGSFOR() <TK_rpar> b = ENV() {return new For(f.beginLine, f.beginColumn, (InitializeFor) args[0], (Expression) args[1], (ArrayList<Sentence>) args[2], b);}
+    f = <RW_for> <TK_lpar> args = ARGSFOR() <TK_rpar> b = ENV() {return new For(f.beginLine, f.beginColumn, (InitializeFor) args[0], (Expression) args[1], (ArrayList<Statement>) args[2], b);}
 }
 // ARGSFOR ::= INITIALIZEFOR? ';' EXP? ';' UPDATESFOR?
 Object[] ARGSFOR() : {
     InitializeFor i = null;
     Expression e = null;
-    ArrayList<Sentence> u = null;
+    ArrayList<Statement> u = null;
 } {
     (i = INITIALIZEFOR())? <TK_semicolon> (e = EXP())? <TK_semicolon> (u = UPDATESFOR())? {return new Object[] {i, e, u};}
 }
@@ -369,14 +369,14 @@ ArrayList<Instruction> REASIGNS() : {
     )* {return l;}
 }
 // UPDATESFOR ::= ASSIGN (',' ASSIGN)*
-ArrayList<Sentence> UPDATESFOR() : {
-    Sentence up;
-    ArrayList<Sentence> l = new ArrayList<>();
+ArrayList<Statement> UPDATESFOR() : {
+    Statement up;
+    ArrayList<Statement> l = new ArrayList<>();
 } {
     up = ASSIGN() {l.add(up);} (<TK_comma> up = ASSIGN() {l.add(up);})* {return l;}
 }
 // WHILE ::= 'while' '(' EXP ')' ENV
-Sentence WHILE() : {
+Statement WHILE() : {
     Token w;
     Expression exp;
     Block b;
@@ -384,7 +384,7 @@ Sentence WHILE() : {
     w = <RW_while> <TK_lpar> exp = EXP() <TK_rpar> b = ENV() {return new While(w.beginLine, w.beginColumn, exp, b);}
 }
 // DOWHILE ::= 'do' ENV 'while' '(' EXP ')' ';'
-Sentence DOWHILE() : {
+Statement DOWHILE() : {
     Token d;
     Block b;
     Expression exp;
@@ -392,7 +392,7 @@ Sentence DOWHILE() : {
     d = <RW_do> b = ENV() <RW_while> <TK_lpar> exp = EXP() <TK_rpar> <TK_semicolon> {return new DoWhile(d.beginLine, d.beginColumn, exp, b);}
 }
 // ASSIGN ::= TK_id (('=' | '+=' | '-=' | '*=' | '/=' | '%=') EXP | ('++' | '--'))
-Sentence ASSIGN() : {
+Statement ASSIGN() : {
     Token s;
     IDPos id;
     Expression exp;
@@ -433,14 +433,14 @@ Instruction PRINT() : {
 // ENV ::= '{' INSTRUCTIONS '}'
 Block ENV() : {
     Token l;
-    ArrayList<Sentence> ins;
+    ArrayList<Statement> ins;
 } {
     l = <TK_lbrc> ins = INSTRUCTIONS() <TK_rbrc> {return new Block(l.beginLine, l.beginColumn, ins);}
 }
 // INSTRUCTIONS ::= INSTRUCTION*
-ArrayList<Sentence> INSTRUCTIONS() : {
-    Sentence i;
-    ArrayList<Sentence> l = new ArrayList<>();
+ArrayList<Statement> INSTRUCTIONS() : {
+    Statement i;
+    ArrayList<Statement> l = new ArrayList<>();
 } {
 	(
         try {
@@ -468,8 +468,8 @@ ArrayList<Sentence> INSTRUCTIONS() : {
     'continue'      ';' |
     'break'         ';' 
 */
-Sentence INSTRUCTION() : {
-    Sentence ins;
+Statement INSTRUCTION() : {
+    Statement ins;
     Token trn;
     Expression exp = null;
 } {

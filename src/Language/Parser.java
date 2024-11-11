@@ -273,10 +273,10 @@ l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));
 }
 
 // IF ::= 'if' '(' EXP ')' ENV ('else' (IF | ENV))?
-  final public Sentence IF() throws ParseException {Token r;
+  final public Statement IF() throws ParseException {Token r;
     Expression cn;
     Block b1;
-    Sentence b2 = null;
+    Statement b2 = null;
     r = jj_consume_token(RW_if);
     jj_consume_token(TK_lpar);
     cn = EXP();
@@ -310,7 +310,7 @@ l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));
 }
 
 // SWITCH ::= 'switch' '(' EXP ')' ENVS
-  final public Sentence SWITCH() throws ParseException {Token s;
+  final public Statement SWITCH() throws ParseException {Token s;
     Expression exp;
     Object[] b;
     s = jj_consume_token(RW_switch);
@@ -332,8 +332,8 @@ l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));
 }
 
 // CASESDEFAULT ::= CASES? DEFAULT?
-  final public Object[] CASESDEFAULT() throws ParseException {ArrayList<Sentence> cases = null;
-    Sentence default_ = null;
+  final public Object[] CASESDEFAULT() throws ParseException {ArrayList<Statement> cases = null;
+    Statement default_ = null;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case RW_case:{
       cases = CASES();
@@ -357,8 +357,8 @@ l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));
 }
 
 // CASES ::= CASE+
-  final public ArrayList<Sentence> CASES() throws ParseException {Sentence c;
-    ArrayList<Sentence> cases = new ArrayList<>();
+  final public ArrayList<Statement> CASES() throws ParseException {Statement c;
+    ArrayList<Statement> cases = new ArrayList<>();
     label_4:
     while (true) {
       c = CASE();
@@ -378,11 +378,11 @@ cases.add(c);
 }
 
 // CASE ::= 'case' EXP ':' (ENV | INSTRUCTIONS)
-  final public Sentence CASE() throws ParseException {Token c;
+  final public Statement CASE() throws ParseException {Token c;
     Block b;
-    ArrayList<Sentence> i;
+    ArrayList<Statement> i;
     Expression exp;
-    Sentence case_;
+    Statement case_;
     c = jj_consume_token(RW_case);
     exp = EXP();
     jj_consume_token(TK_colon);
@@ -404,7 +404,7 @@ case_ = new Case(c.beginLine, c.beginColumn, exp, new Block(c.beginLine, c.begin
 // DEFAULT ::= 'default' ':' (ENV | INSTRUCTIONS)
   final public Block DEFAULT() throws ParseException {Token d;
     Block b;
-    ArrayList<Sentence> i;
+    ArrayList<Statement> i;
     Block default_;
     d = jj_consume_token(RW_default);
     jj_consume_token(TK_colon);
@@ -424,7 +424,7 @@ default_ = new Block(d.beginLine, d.beginColumn, i);
 }
 
 // FOR ::= 'for' '(' ARGSFOR ')' ENV
-  final public Sentence FOR() throws ParseException {Token f;
+  final public Statement FOR() throws ParseException {Token f;
     Object[] args;
     Block b;
     f = jj_consume_token(RW_for);
@@ -432,14 +432,14 @@ default_ = new Block(d.beginLine, d.beginColumn, i);
     args = ARGSFOR();
     jj_consume_token(TK_rpar);
     b = ENV();
-{if ("" != null) return new For(f.beginLine, f.beginColumn, (InitializeFor) args[0], (Expression) args[1], (ArrayList<Sentence>) args[2], b);}
+{if ("" != null) return new For(f.beginLine, f.beginColumn, (InitializeFor) args[0], (Expression) args[1], (ArrayList<Statement>) args[2], b);}
     throw new Error("Missing return statement in function");
 }
 
 // ARGSFOR ::= INITIALIZEFOR? ';' EXP? ';' UPDATESFOR?
   final public Object[] ARGSFOR() throws ParseException {InitializeFor i = null;
     Expression e = null;
-    ArrayList<Sentence> u = null;
+    ArrayList<Statement> u = null;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case RW_String:
     case RW_boolean:
@@ -585,8 +585,8 @@ l.add(new Assign(id.line, id.column, id, e));
 }
 
 // UPDATESFOR ::= ASSIGN (',' ASSIGN)*
-  final public ArrayList<Sentence> UPDATESFOR() throws ParseException {Sentence up;
-    ArrayList<Sentence> l = new ArrayList<>();
+  final public ArrayList<Statement> UPDATESFOR() throws ParseException {Statement up;
+    ArrayList<Statement> l = new ArrayList<>();
     up = ASSIGN();
 l.add(up);
     label_7:
@@ -609,7 +609,7 @@ l.add(up);
 }
 
 // WHILE ::= 'while' '(' EXP ')' ENV
-  final public Sentence WHILE() throws ParseException {Token w;
+  final public Statement WHILE() throws ParseException {Token w;
     Expression exp;
     Block b;
     w = jj_consume_token(RW_while);
@@ -622,7 +622,7 @@ l.add(up);
 }
 
 // DOWHILE ::= 'do' ENV 'while' '(' EXP ')' ';'
-  final public Sentence DOWHILE() throws ParseException {Token d;
+  final public Statement DOWHILE() throws ParseException {Token d;
     Block b;
     Expression exp;
     d = jj_consume_token(RW_do);
@@ -637,7 +637,7 @@ l.add(up);
 }
 
 // ASSIGN ::= TK_id (('=' | '+=' | '-=' | '*=' | '/=' | '%=') EXP | ('++' | '--'))
-  final public Sentence ASSIGN() throws ParseException {Token s;
+  final public Statement ASSIGN() throws ParseException {Token s;
     IDPos id;
     Expression exp;
     id = IDPOS();
@@ -787,7 +787,7 @@ l.add(up);
 
 // ENV ::= '{' INSTRUCTIONS '}'
   final public Block ENV() throws ParseException {Token l;
-    ArrayList<Sentence> ins;
+    ArrayList<Statement> ins;
     l = jj_consume_token(TK_lbrc);
     ins = INSTRUCTIONS();
     jj_consume_token(TK_rbrc);
@@ -796,8 +796,8 @@ l.add(up);
 }
 
 // INSTRUCTIONS ::= INSTRUCTION*
-  final public ArrayList<Sentence> INSTRUCTIONS() throws ParseException {Sentence i;
-    ArrayList<Sentence> l = new ArrayList<>();
+  final public ArrayList<Statement> INSTRUCTIONS() throws ParseException {Statement i;
+    ArrayList<Statement> l = new ArrayList<>();
     label_8:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -853,7 +853,7 @@ Token t = getNextToken();
     'continue'      ';' |
     'break'         ';' 
 */
-  final public Sentence INSTRUCTION() throws ParseException {Sentence ins;
+  final public Statement INSTRUCTION() throws ParseException {Statement ins;
     Token trn;
     Expression exp = null;
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
