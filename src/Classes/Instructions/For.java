@@ -2,7 +2,7 @@ package Classes.Instructions;
 import java.util.ArrayList;
 import Classes.Abstracts.Expression;
 import Classes.Abstracts.Instruction;
-import Classes.Abstracts.Sentence;
+import Classes.Abstracts.Statement;
 import Classes.Env.Env;
 import Classes.Utils.InitializeFor;
 import Classes.Utils.ReturnType;
@@ -12,9 +12,9 @@ import Classes.Utils.TypeSent;
 public class For extends Instruction {
     private InitializeFor inits;
     private Expression condition;
-    private ArrayList<Sentence> updates;
+    private ArrayList<Statement> updates;
     private Block instructions;
-    public For(int line, int column, InitializeFor inits, Expression condition, ArrayList<Sentence> updates, Block instructions) {
+    public For(int line, int column, InitializeFor inits, Expression condition, ArrayList<Statement> updates, Block instructions) {
         super(line, column, TypeInst.FOR);
         this.inits = inits;
         this.condition = condition;
@@ -38,7 +38,7 @@ public class For extends Instruction {
             ReturnType block = instructions.exec(envFor);
             if(block != null) {
                 if(block.value == TypeInst.CONTINUE) {
-                    for(Sentence update : updates) {
+                    for(Statement update : updates) {
                         if(update.typeSent == TypeSent.EXPRESSION) {
                             ((Expression) update).exec(envFor);
                         }
@@ -55,7 +55,7 @@ public class For extends Instruction {
                 return block;
             }
             if(updates != null) {
-                for(Sentence update : updates) {
+                for(Statement update : updates) {
                     if(update.typeSent == TypeSent.EXPRESSION) {
                         ((Expression) update).exec(envFor);
                     }

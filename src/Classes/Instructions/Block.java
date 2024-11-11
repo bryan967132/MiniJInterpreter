@@ -2,15 +2,15 @@ package Classes.Instructions;
 import java.util.ArrayList;
 import Classes.Abstracts.Expression;
 import Classes.Abstracts.Instruction;
-import Classes.Abstracts.Sentence;
+import Classes.Abstracts.Statement;
 import Classes.Env.Env;
 import Classes.Utils.ReturnType;
 import Classes.Utils.TypeExp;
 import Classes.Utils.TypeInst;
 import Classes.Utils.TypeSent;
 public class Block extends Instruction {
-    ArrayList<Sentence> instructions;
-    public Block(int line, int column, ArrayList<Sentence> instructions) {
+    ArrayList<Statement> instructions;
+    public Block(int line, int column, ArrayList<Statement> instructions) {
         super(line, column, TypeInst.BLOCK);
         this.instructions = instructions;
     }
@@ -19,7 +19,7 @@ public class Block extends Instruction {
         Expression exp;
         Instruction inst;
         ReturnType ret;
-        for(Sentence instruction : instructions) {
+        for(Statement instruction : instructions) {
             if(instruction.typeSent == TypeSent.EXPRESSION) {
                 exp = (Expression) instruction;
                 ret = exp.exec(newEnv);

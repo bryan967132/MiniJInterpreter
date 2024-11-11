@@ -1,15 +1,15 @@
 package Classes.Instructions;
 import Classes.Abstracts.Expression;
 import Classes.Abstracts.Instruction;
-import Classes.Abstracts.Sentence;
+import Classes.Abstracts.Statement;
 import Classes.Env.Env;
 import Classes.Utils.ReturnType;
 import Classes.Utils.TypeInst;
 public class If extends Instruction {
     Expression condition;
     Block block;
-    Sentence except;
-    public If(int line, int column, Expression condition, Block block, Sentence except) {
+    Statement except;
+    public If(int line, int column, Expression condition, Block block, Statement except) {
         super(line, column, TypeInst.IF);
         this.condition = condition;        
         this.block = block;        
