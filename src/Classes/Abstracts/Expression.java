@@ -3,7 +3,7 @@ import Classes.Env.Env;
 import Classes.Utils.ReturnType;
 import Classes.Utils.TypeExp;
 import Classes.Utils.TypeSent;
-public abstract class Expression extends Sentence {
+public abstract class Expression extends Statement {
     public TypeExp typeExp;
     public Expression(int line, int column, TypeExp typeExp) {
         super(line, column, TypeSent.EXPRESSION);
