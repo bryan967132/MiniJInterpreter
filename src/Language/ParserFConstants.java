@@ -102,13 +102,13 @@ public interface ParserFConstants {
   /** RegularExpression Id. */
   int TK_lessequ = 45;
   /** RegularExpression Id. */
-  int TK_moreequ = 46;
+  int TK_greaterequ = 46;
   /** RegularExpression Id. */
   int TK_equ = 47;
   /** RegularExpression Id. */
   int TK_less = 48;
   /** RegularExpression Id. */
-  int TK_more = 49;
+  int TK_greater = 49;
   /** RegularExpression Id. */
   int TK_and = 50;
   /** RegularExpression Id. */

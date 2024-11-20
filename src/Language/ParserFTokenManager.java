@@ -1146,37 +1146,37 @@ void TokenLexicalActions(Token matchedToken)
       case 43 :
         image.append(jjstrLiteralImages[43]);
         lengthOfMatch = jjstrLiteralImages[43].length();
-                         matchedToken.beginColumn = input_stream.tokenBegin;
+                            matchedToken.beginColumn = input_stream.tokenBegin;
          break;
       case 44 :
         image.append(jjstrLiteralImages[44]);
         lengthOfMatch = jjstrLiteralImages[44].length();
-                         matchedToken.beginColumn = input_stream.tokenBegin;
+                            matchedToken.beginColumn = input_stream.tokenBegin;
          break;
       case 45 :
         image.append(jjstrLiteralImages[45]);
         lengthOfMatch = jjstrLiteralImages[45].length();
-                         matchedToken.beginColumn = input_stream.tokenBegin;
+                            matchedToken.beginColumn = input_stream.tokenBegin;
          break;
       case 46 :
         image.append(jjstrLiteralImages[46]);
         lengthOfMatch = jjstrLiteralImages[46].length();
-                         matchedToken.beginColumn = input_stream.tokenBegin;
+                            matchedToken.beginColumn = input_stream.tokenBegin;
          break;
       case 47 :
         image.append(jjstrLiteralImages[47]);
         lengthOfMatch = jjstrLiteralImages[47].length();
-                         matchedToken.beginColumn = input_stream.tokenBegin;
+                            matchedToken.beginColumn = input_stream.tokenBegin;
          break;
       case 48 :
         image.append(jjstrLiteralImages[48]);
         lengthOfMatch = jjstrLiteralImages[48].length();
-                         matchedToken.beginColumn = input_stream.tokenBegin;
+                            matchedToken.beginColumn = input_stream.tokenBegin;
          break;
       case 49 :
         image.append(jjstrLiteralImages[49]);
         lengthOfMatch = jjstrLiteralImages[49].length();
-                         matchedToken.beginColumn = input_stream.tokenBegin;
+                            matchedToken.beginColumn = input_stream.tokenBegin;
          break;
       case 50 :
         image.append(jjstrLiteralImages[50]);

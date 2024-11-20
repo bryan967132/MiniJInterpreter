@@ -88,13 +88,13 @@ TOKEN : {
 
 // Operadores Relacionales
 TOKEN : {
-    <TK_equequ  : "=="> {matchedToken.beginColumn = input_stream.tokenBegin;} |
-    <TK_notequ  : "!="> {matchedToken.beginColumn = input_stream.tokenBegin;} |
-    <TK_lessequ : "<="> {matchedToken.beginColumn = input_stream.tokenBegin;} |
-    <TK_moreequ : ">="> {matchedToken.beginColumn = input_stream.tokenBegin;} |
-    <TK_equ     : "=">  {matchedToken.beginColumn = input_stream.tokenBegin;} |
-    <TK_less    : "<">  {matchedToken.beginColumn = input_stream.tokenBegin;} |
-    <TK_more    : ">">  {matchedToken.beginColumn = input_stream.tokenBegin;} 
+    <TK_equequ     : "=="> {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <TK_notequ     : "!="> {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <TK_lessequ    : "<="> {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <TK_greaterequ : ">="> {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <TK_equ        : "=">  {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <TK_less       : "<">  {matchedToken.beginColumn = input_stream.tokenBegin;} |
+    <TK_greater    : ">">  {matchedToken.beginColumn = input_stream.tokenBegin;} 
 }
 
 // Operadores Lógicos
@@ -134,7 +134,7 @@ SKIP : {
 }
 
 SKIP : {
-    <"//"(~["\n","\r"])*>                                {ParserF.painter.COMMENT(input_stream.tokenBegin, image.length());} |
+    <"//"(~["\r","\n"])*>                                {ParserF.painter.COMMENT(input_stream.tokenBegin, image.length());} |
     <"/""*"(~["*"])*"*"("*"|~["*","/"](~["*"])*"*")*"/"> {ParserF.painter.COMMENT(input_stream.tokenBegin, image.length());} |
     <(~[])>                                              {ParserF.painter.ERROR(input_stream.tokenBegin, image.length());}
 }
@@ -412,7 +412,7 @@ void EXP5() : {} {
 }
 // EXP4 ::= EXP3 (('<=' | '>=' |'<' | '>') EXP3)*
 void EXP4() : {} {
-    EXP3() ((<TK_lessequ> | <TK_moreequ> | <TK_less> | <TK_more>) EXP3())*
+    EXP3() ((<TK_lessequ> | <TK_greaterequ> | <TK_less> | <TK_greater>) EXP3())*
 }
 // EXP3 ::= EXP2 (('+' | '-') EXP2)*
 void EXP3() : {} {

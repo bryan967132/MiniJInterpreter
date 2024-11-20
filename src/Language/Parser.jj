@@ -97,13 +97,13 @@ TOKEN : {
 
 // Operadores Relacionales
 TOKEN : {
-    <TK_equequ  : "=="> |
-    <TK_notequ  : "!="> |
-    <TK_lessequ : "<="> |
-    <TK_moreequ : ">="> |
-    <TK_equ     : "=">  |
-    <TK_less    : "<">  |
-    <TK_more    : ">">  
+    <TK_equequ     : "=="> |
+    <TK_notequ     : "!="> |
+    <TK_lessequ    : "<="> |
+    <TK_greaterequ : ">="> |
+    <TK_equ        : "=">  |
+    <TK_less       : "<">  |
+    <TK_greater    : ">">  
 }
 
 // Operadores Lógicos
@@ -143,7 +143,7 @@ SKIP : {
 }
 
 SKIP : {
-    <"//"(~["\n","\r"])*>                                |
+    <"//"(~["\r","\n"])*>                                |
     <"/""*"(~["*"])*"*"("*"|~["*","/"](~["*"])*"*")*"/"> |
     <(~[])> {Outs.errors.add(Outs.newError(input_stream.line, input_stream.column, TypeError.LEXICAL, "Caracter no reconocido. \"" + image + "\""));}
 }
@@ -569,7 +569,7 @@ Expression EXP4() : {
     Expression e1, e2;
 } {
     e1 = EXP3() (
-        (s = <TK_lessequ> | s = <TK_moreequ> | s = <TK_less> | s = <TK_more>) e2 = EXP3() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} 
+        (s = <TK_lessequ> | s = <TK_greaterequ> | s = <TK_less> | s = <TK_greater>) e2 = EXP3() {e1 = new Relational(e1.line, e1.column, e1, s.image, e2);} 
     )* {return e1;}
 }
 // EXP3 ::= EXP2 (('+' | '-') EXP2)*

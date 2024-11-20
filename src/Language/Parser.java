@@ -1187,9 +1187,9 @@ e1 = new Relational(e1.line, e1.column, e1, s.image, e2);
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case TK_lessequ:
-      case TK_moreequ:
+      case TK_greaterequ:
       case TK_less:
-      case TK_more:{
+      case TK_greater:{
         ;
         break;
         }
@@ -1202,16 +1202,16 @@ e1 = new Relational(e1.line, e1.column, e1, s.image, e2);
         s = jj_consume_token(TK_lessequ);
         break;
         }
-      case TK_moreequ:{
-        s = jj_consume_token(TK_moreequ);
+      case TK_greaterequ:{
+        s = jj_consume_token(TK_greaterequ);
         break;
         }
       case TK_less:{
         s = jj_consume_token(TK_less);
         break;
         }
-      case TK_more:{
-        s = jj_consume_token(TK_more);
+      case TK_greater:{
+        s = jj_consume_token(TK_greater);
         break;
         }
       default:
