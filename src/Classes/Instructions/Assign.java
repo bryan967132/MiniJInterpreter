@@ -20,7 +20,7 @@ public class Assign extends Instruction {
     public ReturnType exec(Env env) {
         ReturnType value = this.value.exec(env);
         if(pos == null) {
-            env.reasignID(id, value, this.line, this.column);
+            env.reassignID(id, value, this.line, this.column);
         } else {
             ArrayList<Integer[]> pos = new ArrayList<>();
             ReturnType index;
@@ -32,7 +32,7 @@ public class Assign extends Instruction {
                 }
                 pos.add(new Integer[] {Integer.parseInt(index.value.toString()), e.line, e.column});
             }
-            env.reasignID(id, pos, value, this.line, this.column);
+            env.reassignID(id, pos, value, this.line, this.column);
         }
         return null;
     }

@@ -27,7 +27,7 @@ public class AssignComp extends Instruction {
     }
     public ReturnType exec(Env env) {
         if(this.idPos.pos == null) {
-            env.reasignID(
+            env.reassignID(
                 idPos.id,
                 new Arithmetic(line, column,
                     new AccessVar(line, column, idPos),
@@ -54,7 +54,7 @@ public class AssignComp extends Instruction {
             }
             pos.add(new Integer[] {Integer.parseInt(index.value.toString()), e.line, e.column});
         }
-        env.reasignID(
+        env.reassignID(
             idPos.id,
             pos,
             new Arithmetic(line, column,
