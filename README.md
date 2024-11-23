@@ -56,11 +56,11 @@ Implementa patrón de diseño interpreter.
 
 <INITIALIZEFOR> ::=
     <DATATYPE> <INITIDSFOR> |
-    <REASIGNS>              
+    <ASSIGNS>              
 
 <INITIDSFOR> ::= TK_id '=' <EXP> (',' TK_id '=' <EXP>)*
 
-<REASIGNS> ::= <IDPOS> '=' <EXP> (',' <IDPOS> '=' <EXP>)*
+<ASSIGNS> ::= <IDPOS> '=' <EXP> (',' <IDPOS> '=' <EXP>)*
 
 <UPDATESFOR> ::= <ASSIGN> (',' <ASSIGN>)*
 
