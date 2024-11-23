@@ -258,11 +258,11 @@ void ARGSFOR() : {} {
 }
 /* INITIALIZEFOR ::=
     DATATYPE INITIDSFOR |
-    REASIGNS            
+    ASSIGNS            
 */
 void INITIALIZEFOR() : {} {
     DATATYPE() INITIDSFOR() |
-    REASIGNS()              
+    ASSIGNS()              
 }
 // INITIDSFOR ::= TK_id '=' EXP (',' TK_id '=' EXP)*
 void INITIDSFOR() : {
@@ -272,8 +272,8 @@ void INITIDSFOR() : {
         <TK_comma> id = <TK_id> {painter.VARIABLE(id.beginColumn, id.image.length());} <TK_equ> EXP()
     )*
 }
-// REASIGNS ::= IDPOS '=' EXP (',' IDPOS '=' EXP)*
-void REASIGNS() : {} {
+// ASSIGNS ::= IDPOS '=' EXP (',' IDPOS '=' EXP)*
+void ASSIGNS() : {} {
     IDPOS() <TK_equ> EXP() (<TK_comma> IDPOS() <TK_equ> EXP())*
 }
 // UPDATESFOR ::= ASSIGN (',' ASSIGN)*

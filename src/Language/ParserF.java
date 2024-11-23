@@ -423,7 +423,7 @@ painter.RW2(f.beginColumn, f.image.length());
 
 /* INITIALIZEFOR ::=
     DATATYPE INITIDSFOR |
-    REASIGNS            
+    ASSIGNS            
 */
   final public void INITIALIZEFOR() throws ParseException {
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -437,7 +437,7 @@ painter.RW2(f.beginColumn, f.image.length());
       break;
       }
     case TK_id:{
-      REASIGNS();
+      ASSIGNS();
       break;
       }
     default:
@@ -472,8 +472,8 @@ painter.VARIABLE(id.beginColumn, id.image.length());
     }
 }
 
-// REASIGNS ::= IDPOS '=' EXP (',' IDPOS '=' EXP)*
-  final public void REASIGNS() throws ParseException {
+// ASSIGNS ::= IDPOS '=' EXP (',' IDPOS '=' EXP)*
+  final public void ASSIGNS() throws ParseException {
     IDPOS();
     jj_consume_token(TK_equ);
     EXP();

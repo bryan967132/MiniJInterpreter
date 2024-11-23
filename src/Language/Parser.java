@@ -497,7 +497,7 @@ default_ = new Block(d.beginLine, d.beginColumn, i);
 
 /* INITIALIZEFOR ::=
     DATATYPE INITIDSFOR |
-    REASIGNS            
+    ASSIGNS            
 */
   final public InitializeFor INITIALIZEFOR() throws ParseException {DataType t;
     ArrayList<IDValue> i;
@@ -514,7 +514,7 @@ default_ = new Block(d.beginLine, d.beginColumn, i);
       break;
       }
     case TK_id:{
-      r = REASIGNS();
+      r = ASSIGNS();
 {if ("" != null) return new InitializeFor(r);}
       break;
       }
@@ -555,8 +555,8 @@ l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));
     throw new Error("Missing return statement in function");
 }
 
-// REASIGNS ::= IDPOS '=' EXP (',' IDPOS '=' EXP)*
-  final public ArrayList<Instruction> REASIGNS() throws ParseException {IDPos id;
+// ASSIGNS ::= IDPOS '=' EXP (',' IDPOS '=' EXP)*
+  final public ArrayList<Instruction> ASSIGNS() throws ParseException {IDPos id;
     Expression e;
     ArrayList<Instruction> l = new ArrayList<>();
     id = IDPOS();

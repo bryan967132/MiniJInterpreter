@@ -337,7 +337,7 @@ Object[] ARGSFOR() : {
 }
 /* INITIALIZEFOR ::=
     DATATYPE INITIDSFOR |
-    REASIGNS            
+    ASSIGNS            
 */
 InitializeFor INITIALIZEFOR() : {
     DataType t;
@@ -345,7 +345,7 @@ InitializeFor INITIALIZEFOR() : {
     ArrayList<Instruction> r;
 } {
     t = DATATYPE() i = INITIDSFOR() {return new InitializeFor(new InitVar(i.get(0).line, i.get(0).column, i, t));} |
-    r = REASIGNS()              {return new InitializeFor(r);} 
+    r = ASSIGNS()              {return new InitializeFor(r);} 
 }
 // INITIDSFOR ::= TK_id '=' EXP (',' TK_id '=' EXP)*
 ArrayList<IDValue> INITIDSFOR() : {
@@ -358,8 +358,8 @@ ArrayList<IDValue> INITIDSFOR() : {
         <TK_comma> id = <TK_id> <TK_equ> exp = EXP() {l.add(new IDValue(id.beginLine, id.beginColumn, id.image, exp));}
     )* {return l;}
 }
-// REASIGNS ::= IDPOS '=' EXP (',' IDPOS '=' EXP)*
-ArrayList<Instruction> REASIGNS() : {
+// ASSIGNS ::= IDPOS '=' EXP (',' IDPOS '=' EXP)*
+ArrayList<Instruction> ASSIGNS() : {
     IDPos id;
     Expression e;
     ArrayList<Instruction> l = new ArrayList<>();
